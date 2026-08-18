@@ -5,13 +5,16 @@ from datetime import datetime, timezone
 from alembic.config import Config
 from alembic import command
 from fastapi import FastAPI, Request
+from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+# from fastapi.responses import HTMLResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
+from app.code_samples import add_code_samples
 from app.database import engine, Base
 from app.logging_config import logger
 from app.tenant_routes import router as tenant_router
@@ -33,7 +36,7 @@ app = FastAPI(
     version="0.1.0",
     description="Production-ready Authentication & Authorization API",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url=None,
 )
 
 startup_time = time.time()
@@ -82,8 +85,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "error": {"code": "VALIDATION_ERROR", "message": "Input tidak valid", "details": details},
         },
     )
-
-
+    
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -91,6 +93,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+    openapi_schema = add_code_samples(openapi_schema, base_url="https://caca-authentication.vercel.app")
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi
 
 app.include_router(tenant_router)
 app.include_router(auth_router)
@@ -113,6 +130,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def root():
     return FileResponse("static/index.html")
 """
+
+@app.get("/redoc", include_in_schema=True)
+async def root():
+    return FileResponse("static/redoc.html")
 
 @app.get("/")
 async def root():
