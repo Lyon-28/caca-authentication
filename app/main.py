@@ -1,12 +1,17 @@
+import time
+from datetime import datetime
+
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.config import settings
 from app.database import engine, Base
 from app.logging_config import logger
+from app import schemas
 from app.tenant_routes import router as tenant_router
 from app.auth_routes import router as auth_router
 from app.otp_routes import router as otp_router
@@ -29,11 +34,13 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
+startup_time = time.time()
+
+
 @app.on_event("startup")
 async def startup():
     logger.info("app_starting", extra={"extra_data": {"env": settings.env}})
 
-app = FastAPI(title="Caca Auth", version="0.1.0")
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
@@ -43,6 +50,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     else:
         error = {"code": "ERROR", "message": str(detail)}
     return JSONResponse(status_code=exc.status_code, content={"success": False, "error": error})
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -60,7 +68,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "error": {"code": "VALIDATION_ERROR", "message": "Input tidak valid", "details": details},
         },
     )
-    
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -85,11 +94,13 @@ app.include_router(newsletter_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+
 @app.get("/")
 async def root():
     return FileResponse("static/index.html")
 
-app.get("/health", response_model=schemas.HealthResponse)
+
+@app.get("/health", response_model=schemas.HealthResponse)
 async def health_check():
     uptime = time.time() - startup_time
     return {
@@ -98,7 +109,3 @@ async def health_check():
         "version": "1.0.0",
         "uptime_seconds": round(uptime, 2)
     }
-
-@app.get("/health")
-async def health():
-    return {"success": True, "data": {"status": "ok"}, "meta": None}
