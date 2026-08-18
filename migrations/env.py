@@ -28,7 +28,7 @@ new_query_string = urlencode(query_params, doseq=True)
 cleaned_db_url = parsed_url._replace(query=new_query_string).geturl()
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", cleaned_db_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
