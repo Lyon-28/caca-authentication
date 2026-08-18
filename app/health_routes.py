@@ -6,6 +6,10 @@ from app.redis_client import redis_client
 
 router = APIRouter(tags=["Health"])
 
+@router.get("/health")
+async def health():
+    return {"success": True, "data": {"status": "ok"}, "meta": None}
+
 @router.get("/health/db")
 async def health_db():
     start = time.perf_counter()
