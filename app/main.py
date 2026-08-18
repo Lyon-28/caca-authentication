@@ -98,7 +98,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def root():
     return FileResponse("static/index.html")
-
+    
+@router.get("/health")
+async def health():
+    return {"success": True, "data": {"status": "ok"}, "meta": None}
 
 @app.get("/health/detailed,", response_model=schemas.HealthResponse)
 async def health_check():
