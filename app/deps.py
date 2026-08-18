@@ -12,7 +12,7 @@ async def get_tenant_from_key(
     x_api_key: str = Header(..., alias="X-API-Key"),
     db: AsyncSession = Depends(get_db),
 ) -> Tenant:
-    result = await db.execute(select(Tenant).where(Tenant.secret_key == x_api_key, Tenant.is_active == True))
+    result = await db.execute(select(Tenant).where(Tenant.public_key == x_api_key, Tenant.is_active == True))
     tenant = result.scalar_one_or_none()
     if not tenant:
         raise HTTPException(status_code=401, detail={"code": "INVALID_API_KEY", "message": "API key tidak valid"})
@@ -22,7 +22,6 @@ async def get_tenant_from_key(
     await increment_usage(tenant.id)
 
     return tenant
-
 async def get_current_user(
     authorization: str = Header(...),
     db: AsyncSession = Depends(get_db),
