@@ -100,7 +100,7 @@ async def root():
     return FileResponse("static/index.html")
 
 
-@app.get("/health", response_model=schemas.HealthResponse)
+@app.get("/health/detailed,", response_model=schemas.HealthResponse)
 async def health_check():
     uptime = time.time() - startup_time
     return {
