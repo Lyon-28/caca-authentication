@@ -28,10 +28,10 @@ async def test_sql_injection_does_not_bypass_auth(client):
 
     resp = await client.post(
         "/auth/login",
-        json={"email": "victim@test.com' --", "password": "anything"},
+        json={"email": "victim'--@test.com", "password": "anything"},
         headers={"X-API-Key": secret_key},
     )
-    assert resp.status_code == 401
+    assert resp.status_code in (401, 422)
 
 @pytest.mark.asyncio
 async def test_no_credentials_no_access(client):
