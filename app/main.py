@@ -1,3 +1,5 @@
+import os
+
 import asyncio
 import time
 from datetime import datetime, timezone
@@ -7,6 +9,7 @@ from alembic import command
 from fastapi import FastAPI, Request
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 # from fastapi.responses import HTMLResponse
 from fastapi.exceptions import RequestValidationError
@@ -31,6 +34,8 @@ from app.admin_routes import router as admin_router
 from app.geocoding_routes import router as geocoding_router
 from app.newsletter_routes import router as newsletter_router
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 app = FastAPI(
     title="Caca Auth",
     version="0.1.0",
@@ -41,11 +46,9 @@ app = FastAPI(
 
 startup_time = time.time()
 
-
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
     command.upgrade(alembic_cfg, "head")
-
 
 @app.on_event("startup")
 async def startup():
@@ -123,7 +126,7 @@ app.include_router(admin_router)
 app.include_router(geocoding_router)
 app.include_router(newsletter_router)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "..", "static")), name="static")
 
 """
 @app.get("/")
@@ -131,9 +134,10 @@ async def root():
     return FileResponse("static/index.html")
 """
 
-@app.get("/redoc", include_in_schema=True)
-async def root():
-    return FileResponse("static/redoc.html")
+@app.get("/redoc", include_in_schema=False)
+async def custom_redoc():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "redoc.html"))
+
 
 @app.get("/")
 async def root():
