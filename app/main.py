@@ -1,5 +1,7 @@
 import asyncio
+import time
 from datetime import datetime, timezone
+
 from alembic.config import Config
 from alembic import command
 from fastapi import FastAPI, Request
@@ -8,6 +10,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.config import settings
 from app.database import engine, Base
 from app.logging_config import logger
@@ -33,9 +36,13 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
+startup_time = time.time()
+
+
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
     command.upgrade(alembic_cfg, "head")
+
 
 @app.on_event("startup")
 async def startup():
@@ -47,7 +54,8 @@ async def startup():
         logger.error("migration_failed", extra={"extra_data": {"error": str(e)}})
         raise
     logger.info("app_starting", extra={"extra_data": {"env": settings.env}})
-    
+
+
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     detail = exc.detail
@@ -56,6 +64,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     else:
         error = {"code": "ERROR", "message": str(detail)}
     return JSONResponse(status_code=exc.status_code, content={"success": False, "error": error})
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -73,7 +82,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "error": {"code": "VALIDATION_ERROR", "message": "Input tidak valid", "details": details},
         },
     )
-    
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -103,30 +113,35 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def root():
     return FileResponse("static/index.html")
 """
+
 @app.get("/")
 async def root():
     return {
         "success": True,
         "data": {
-            "name": "Caca Auth API",
-            "version": "0.1.0",
+            "name": app.title,
+            "version": app.version,
             "status": "operational",
             "environment": settings.env,
-            "docs_url": "/docs",
-            "redoc_url": "/redoc",
+            "docs_url": app.docs_url,
+            "redoc_url": app.redoc_url,
             "health_check": "/health",
             "timestamp": datetime.now(timezone.utc).isoformat(),
         },
         "meta": None,
     }
 
-app.get("/health/detailed", response_model=schemas.HealthResponse)
-async def health_check():
+
+@app.get("/health/detailed")
+async def health_detailed():
     uptime = time.time() - startup_time
     return {
-        "status": "healthy",
-        "timestamp": datetime.utcnow(),
-        "version": "1.0.0",
-        "uptime_seconds": round(uptime, 2)
-        "success": True, 
-        "data": {"status": "ok"}, "meta": None}
+        "success": True,
+        "data": {
+            "status": "healthy",
+            "version": app.version,
+            "uptime_seconds": round(uptime, 2),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        },
+        "meta": None,
+    }
