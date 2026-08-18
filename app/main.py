@@ -1,17 +1,16 @@
-import time
-from datetime import datetime
-
+import asyncio
+from datetime import datetime, timezone
+from alembic.config import Config
+from alembic import command
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
-
 from app.config import settings
 from app.database import engine, Base
 from app.logging_config import logger
-from app import schemas
 from app.tenant_routes import router as tenant_router
 from app.auth_routes import router as auth_router
 from app.otp_routes import router as otp_router
@@ -34,14 +33,21 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-startup_time = time.time()
-
+def run_migrations():
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
 
 @app.on_event("startup")
 async def startup():
+    try:
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, run_migrations)
+        logger.info("migrations_applied")
+    except Exception as e:
+        logger.error("migration_failed", extra={"extra_data": {"error": str(e)}})
+        raise
     logger.info("app_starting", extra={"extra_data": {"env": settings.env}})
-
-
+    
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     detail = exc.detail
@@ -50,7 +56,6 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     else:
         error = {"code": "ERROR", "message": str(detail)}
     return JSONResponse(status_code=exc.status_code, content={"success": False, "error": error})
-
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -68,8 +73,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "error": {"code": "VALIDATION_ERROR", "message": "Input tidak valid", "details": details},
         },
     )
-
-
+    
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -94,12 +98,29 @@ app.include_router(newsletter_router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
+"""
 @app.get("/")
 async def root():
     return FileResponse("static/index.html")
+"""
+@app.get("/")
+async def root():
+    return {
+        "success": True,
+        "data": {
+            "name": "Caca Auth API",
+            "version": "0.1.0",
+            "status": "operational",
+            "environment": settings.env,
+            "docs_url": "/docs",
+            "redoc_url": "/redoc",
+            "health_check": "/health",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        },
+        "meta": None,
+    }
 
-@app.get("/health/detailed,", response_model=schemas.HealthResponse)
+app.get("/health/detailed", response_model=schemas.HealthResponse)
 async def health_check():
     uptime = time.time() - startup_time
     return {
@@ -107,4 +128,5 @@ async def health_check():
         "timestamp": datetime.utcnow(),
         "version": "1.0.0",
         "uptime_seconds": round(uptime, 2)
-    }
+        "success": True, 
+        "data": {"status": "ok"}, "meta": None}
