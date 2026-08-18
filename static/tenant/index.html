@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caca Auth — Tenant Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #131722;
+      --border: #232838;
+      --text: #e6e9f0;
+      --muted: #8891a7;
+      --accent: #6366f1;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warn: #eab308
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh
+    }
+    
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px
+    }
+    
+    .login-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 400px
+    }
+    
+    .login-box h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+    
+    .login-box p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      background: #0b0e14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 12px
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--accent)
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px
+    }
+    
+    button:hover {
+      opacity: .9
+    }
+    
+    .tab-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: #0b0e14;
+      border-radius: 10px;
+      padding: 4px
+    }
+    
+    .tab-switch button {
+      background: transparent;
+      color: var(--muted);
+      padding: 8px
+    }
+    
+    .tab-switch button.active {
+      background: var(--accent);
+      color: #fff
+    }
+    
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px
+    }
+    
+    .app {
+      display: none
+    }
+    
+    .app.active {
+      display: block
+    }
+    
+    .topbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+    
+    .topbar h1 {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+    
+    .logout-btn {
+      width: auto;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      font-size: 13px
+    }
+    
+    .content {
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto
+    }
+    
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 16px
+    }
+    
+    .card h2 {
+      font-size: 15px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px
+    }
+    
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px
+    }
+    
+    .stat .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+    
+    .stat .value {
+      font-size: 26px;
+      font-weight: 700;
+      margin-top: 6px
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background: #0b0e14;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 20px;
+      transition: width .3s
+    }
+    
+    .progress-fill.warn {
+      background: var(--warn)
+    }
+    
+    .progress-fill.danger {
+      background: var(--danger)
+    }
+    
+    .key-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0b0e14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-family: monospace;
+      font-size: 13px
+    }
+    
+    .key-row .label-tag {
+      background: #232838;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      font-family: -apple-system, sans-serif
+    }
+    
+    .key-row code {
+      flex: 1;
+      word-break: break-all
+    }
+    
+    .copy-btn {
+      width: auto;
+      padding: 6px 10px;
+      font-size: 12px;
+      background: #232838
+    }
+    
+    .warning-box {
+      background: rgba(239, 68, 68, .1);
+      border: 1px solid rgba(239, 68, 68, .3);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13px;
+      color: #f87171;
+      margin-bottom: 16px;
+      display: none
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      border-radius: 10px;
+      display: none;
+      z-index: 100
+    }
+    
+    @media(max-width:640px) {
+      .content {
+        padding: 14px
+      }
+      
+      .topbar {
+        padding: 14px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1><i class="fa-solid fa-cube"></i> Caca Auth</h1>
+      <p>Dashboard developer — kelola API key aplikasi kamu</p>
+      <div class="tab-switch">
+        <button id="tabLogin" class="active" onclick="switchAuthTab('login')">Login</button>
+        <button id="tabRegister" onclick="switchAuthTab('register')">Daftar Tenant Baru</button>
+      </div>
+      <div id="formLogin">
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="tenantLogin()">Masuk</button>
+      </div>
+      <div id="formRegister" style="display:none">
+        <input type="text" id="regName" placeholder="Nama aplikasi">
+        <input type="email" id="regEmail" placeholder="Email">
+        <input type="password" id="regPassword" placeholder="Password (min 8, kombinasi huruf besar/kecil/angka/simbol)">
+        <button onclick="tenantRegister()">Daftar</button>
+      </div>
+      <div class="error-msg" id="authError"></div>
+    </div>
+  </div>
+  
+  <div class="app" id="app">
+    <div class="topbar">
+      <h1><i class="fa-solid fa-cube"></i> <span id="tenantName">Dashboard</span></h1>
+      <button class="logout-btn" onclick="tenantLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+    </div>
+    <div class="content">
+      
+      <div class="warning-box" id="newKeyWarning">
+        <i class="fa-solid fa-triangle-exclamation"></i> Secret key baru dibuat. Simpan sekarang — tidak akan ditampilkan penuh lagi setelah kamu meninggalkan halaman ini.
+      </div>
+      
+      <div class="grid" id="statsGrid"></div>
+      
+      <div class="card">
+        <h2><i class="fa-solid fa-key"></i> API Keys</h2>
+        <div class="key-row">
+          <span class="label-tag">SECRET</span>
+          <code id="secretKeyDisplay">•••</code>
+        </div>
+        <div class="key-row">
+          <span class="label-tag">PUBLIC</span>
+          <code id="publicKeyDisplay">•••</code>
+          <button class="copy-btn" onclick="copyText(document.getElementById('publicKeyDisplay').textContent)">Copy</button>
+        </div>
+        <button onclick="regenerateKeys()" style="width:auto;padding:10px 18px;background:var(--danger);margin-top:6px"><i class="fa-solid fa-rotate"></i> Regenerate Keys</button>
+      </div>
+      
+      <div class="card">
+        <h2><i class="fa-solid fa-gauge"></i> Kuota Bulanan</h2>
+        <p id="usageText" style="color:var(--muted);font-size:13px;margin-bottom:4px"></p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="usageBar" style="width:0%"></div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <script>
+    const API_BASE = window.location.origin;
+    let tenantToken = localStorage.getItem('caca_tenant_token');
+    let lastRegeneratedKey = null;
+    
+    if (tenantToken) showApp();
+    
+    function switchAuthTab(tab) {
+      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+      document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
+      document.getElementById('authError').textContent = '';
+    }
+    
+    async function tenantLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const errEl = document.getElementById('authError');
+      errEl.textContent = '';
+      try {
+        const res = await fetch(`${API_BASE}/tenant/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+        const json = await res.json();
+        if (!json.success) { errEl.textContent = json.error.message; return; }
+        tenantToken = json.data.token;
+        localStorage.setItem('caca_tenant_token', tenantToken);
+        showApp();
+      } catch (e) { errEl.textContent = 'Gagal terhubung ke server'; }
+    }
+    
+    async function tenantRegister() {
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      const errEl = document.getElementById('authError');
+      errEl.textContent = '';
+      try {
+        const res = await fetch(`${API_BASE}/tenant/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
+        const json = await res.json();
+        if (!json.success) { errEl.textContent = json.error.message || JSON.stringify(json.error.details); return; }
+        lastRegeneratedKey = json.data.secret_key;
+        document.getElementById('loginEmail').value = email;
+        document.getElementById('loginPassword').value = password;
+        switchAuthTab('login');
+        await tenantLogin();
+      } catch (e) { errEl.textContent = 'Gagal terhubung ke server'; }
+    }
+    
+    function tenantLogout() {
+      fetch(`${API_BASE}/tenant/logout`, { method: 'POST', headers: { 'Authorization': `Bearer ${tenantToken}` } });
+      localStorage.removeItem('caca_tenant_token');
+      location.reload();
+    }
+    
+    function showApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').classList.add('active');
+      loadDashboard();
+    }
+    
+    async function apiCall(path, options = {}) {
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers: { ...options.headers, 'Authorization': `Bearer ${tenantToken}`, 'Content-Type': 'application/json' } });
+      if (res.status === 401) {
+        localStorage.removeItem('caca_tenant_token');
+        location.reload();
+        return { success: false };
+      }
+      return res.json();
+    }
+    
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2500);
+    }
+    
+    function copyText(text) {
+      navigator.clipboard.writeText(text);
+      showToast('Disalin ke clipboard');
+    }
+    
+    async function loadDashboard() {
+      const json = await apiCall('/tenant/dashboard');
+      if (!json.success) return;
+      const d = json.data;
+      
+      document.getElementById('tenantName').textContent = d.tenant.name;
+      
+      document.getElementById('statsGrid').innerHTML = `
+    <div class="stat"><div class="label">Total Users</div><div class="value">${d.total_users}</div></div>
+    <div class="stat"><div class="label">Plan</div><div class="value" style="font-size:18px;text-transform:capitalize">${d.tenant.plan}</div></div>
+    <div class="stat"><div class="label">Periode</div><div class="value" style="font-size:18px">${d.usage.period}</div></div>
+  `;
+      
+      document.getElementById('secretKeyDisplay').textContent = lastRegeneratedKey || d.api_keys.secret_key_preview;
+      document.getElementById('publicKeyDisplay').textContent = d.api_keys.public_key;
+      
+      if (lastRegeneratedKey) document.getElementById('newKeyWarning').style.display = 'block';
+      
+      const pct = d.usage.percentage;
+      document.getElementById('usageText').textContent = `${d.usage.requests_used.toLocaleString('id-ID')} / ${d.usage.requests_quota.toLocaleString('id-ID')} request (${pct}%)`;
+      const bar = document.getElementById('usageBar');
+      bar.style.width = Math.min(pct, 100) + '%';
+      bar.className = 'progress-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+    }
+    
+    async function regenerateKeys() {
+      if (!confirm('Yakin? Key lama akan langsung tidak berlaku dan aplikasi yang masih pakai key lama akan gagal auth.')) return;
+      const json = await apiCall('/tenant/regenerate-keys', { method: 'POST' });
+      if (json.success) {
+        lastRegeneratedKey = json.data.secret_key;
+        showToast('Key berhasil di-regenerate');
+        loadDashboard();
+      }
+    }
+  </script>
+</body>
+
+</html>

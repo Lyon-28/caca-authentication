@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caca Auth — Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #131722;
+      --border: #232838;
+      --text: #e6e9f0;
+      --muted: #8891a7;
+      --accent: #6366f1;
+      --danger: #ef4444;
+      --success: #22c55e
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh
+    }
+    
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px
+    }
+    
+    .login-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      width: 100%;
+      max-width: 380px
+    }
+    
+    .login-box h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+    
+    .login-box p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      background: #0b0e14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 12px
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--accent)
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px
+    }
+    
+    button:hover {
+      opacity: .9
+    }
+    
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px
+    }
+    
+    .app {
+      display: none
+    }
+    
+    .app.active {
+      display: block
+    }
+    
+    .topbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+    
+    .topbar h1 {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+    
+    .logout-btn {
+      width: auto;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      font-size: 13px
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto
+    }
+    
+    .tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap
+    }
+    
+    .tab.active {
+      background: var(--accent);
+      color: #fff
+    }
+    
+    .content {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+    
+    .panel {
+      display: none
+    }
+    
+    .panel.active {
+      display: block
+    }
+    
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px
+    }
+    
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px
+    }
+    
+    .stat .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+    
+    .stat .value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 6px
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+    
+    th {
+      text-align: left;
+      color: var(--muted);
+      padding: 10px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border)
+    }
+    
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border)
+    }
+    
+    tr:hover td {
+      background: #161b28
+    }
+    
+    .badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+    
+    .badge.ok {
+      background: rgba(34, 197, 94, .15);
+      color: var(--success)
+    }
+    
+    .badge.bad {
+      background: rgba(239, 68, 68, .15);
+      color: var(--danger)
+    }
+    
+    .actions button {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-right: 6px
+    }
+    
+    .btn-danger {
+      background: var(--danger)
+    }
+    
+    .btn-secondary {
+      background: #2a2f42
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      border-radius: 10px;
+      display: none;
+      z-index: 100
+    }
+    
+    @media(max-width:640px) {
+      .content {
+        padding: 14px
+      }
+      
+      .topbar {
+        padding: 14px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1><i class="fa-solid fa-shield-halved"></i> Caca Auth Admin</h1>
+      <p>Masuk untuk mengelola sistem autentikasi</p>
+      <input type="email" id="adminEmail" placeholder="Email admin">
+      <input type="password" id="adminPassword" placeholder="Password">
+      <button onclick="adminLogin()">Masuk</button>
+      <div class="error-msg" id="loginError"></div>
+    </div>
+  </div>
+  
+  <div class="app" id="app">
+    <div class="topbar">
+      <h1><i class="fa-solid fa-shield-halved"></i> Caca Auth Admin</h1>
+      <button class="logout-btn" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="overview" onclick="switchTab('overview')"><i class="fa-solid fa-chart-line"></i> Overview</div>
+      <div class="tab" data-tab="users" onclick="switchTab('users')"><i class="fa-solid fa-users"></i> Users</div>
+      <div class="tab" data-tab="tenants" onclick="switchTab('tenants')"><i class="fa-solid fa-building"></i> Tenants</div>
+      <div class="tab" data-tab="ip" onclick="switchTab('ip')"><i class="fa-solid fa-network-wired"></i> IP Rules</div>
+      <div class="tab" data-tab="logs" onclick="switchTab('logs')"><i class="fa-solid fa-file-lines"></i> Logs</div>
+    </div>
+    <div class="content">
+      <div class="panel active" id="panel-overview">
+        <div class="grid" id="statsGrid"></div>
+        <div class="card">
+          <p style="color:var(--muted);font-size:13px">Data metrics diambil per-tenant. Untuk melihat metrics tenant tertentu, gunakan tab Tenants lalu masukkan API key tenant terkait di kolom filter Users.</p>
+        </div>
+      </div>
+      <div class="panel" id="panel-users">
+        <div class="card">
+          <input type="text" id="tenantFilter" placeholder="Filter berdasarkan Tenant ID (opsional)" style="margin-bottom:14px">
+          <button onclick="loadUsers()" style="width:auto;padding:8px 16px">Refresh</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Verified</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel" id="panel-tenants">
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tenantsTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel" id="panel-ip">
+        <div class="card">
+          <input type="text" id="newIpTenant" placeholder="Tenant ID">
+          <input type="text" id="newIpAddress" placeholder="IP Address">
+          <select id="newIpType" style="width:100%;padding:12px;background:#0b0e14;border:1px solid var(--border);border-radius:10px;color:var(--text);margin-bottom:12px">
+            <option value="blacklist">Blacklist</option>
+            <option value="whitelist">Whitelist</option>
+          </select>
+          <button onclick="createIpRule()" style="width:auto;padding:8px 16px">Tambah Rule</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Tipe</th>
+                <th>Alasan</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="ipTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel" id="panel-logs">
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Aksi</th>
+                <th>User ID</th>
+                <th>IP</th>
+                <th>Waktu</th>
+              </tr>
+            </thead>
+            <tbody id="logsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
+  
+  <script>
+    const API_BASE = window.location.origin;
+    let adminToken = localStorage.getItem('caca_admin_token');
+    
+    if (adminToken) showApp();
+    
+    async function adminLogin() {
+      const email = document.getElementById('adminEmail').value;
+      const password = document.getElementById('adminPassword').value;
+      const errEl = document.getElementById('loginError');
+      errEl.textContent = '';
+      try {
+        const res = await fetch(`${API_BASE}/admin/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+        const json = await res.json();
+        if (!json.success) { errEl.textContent = json.error.message; return; }
+        adminToken = json.data.token;
+        localStorage.setItem('caca_admin_token', adminToken);
+        showApp();
+      } catch (e) { errEl.textContent = 'Gagal terhubung ke server'; }
+    }
+    
+    async function adminLogout() {
+      await apiCall('/admin/logout', { method: 'POST' });
+      localStorage.removeItem('caca_admin_token');
+      location.reload();
+    }
+    
+    function showApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').classList.add('active');
+      loadOverview();
+      loadUsers();
+      loadTenants();
+      loadIpRules();
+      loadLogs();
+    }
+    
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
+    }
+    
+    async function apiCall(path, options = {}) {
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers: { ...options.headers, 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' } });
+      if (res.status === 401) {
+        localStorage.removeItem('caca_admin_token');
+        location.reload();
+        return { success: false };
+      }
+      return res.json();
+    }
+    
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2500);
+    }
+    
+    async function loadOverview() {
+      const grid = document.getElementById('statsGrid');
+      grid.innerHTML = `
+    <div class="stat"><div class="label">Total Tenants</div><div class="value" id="statTenants">-</div></div>
+    <div class="stat"><div class="label">Total Users</div><div class="value" id="statUsers">-</div></div>
+    <div class="stat"><div class="label">IP Rules Aktif</div><div class="value" id="statIpRules">-</div></div>
+  `;
+      const tenants = await apiCall('/admin/tenants');
+      const rules = await apiCall('/admin/ip-rules');
+      document.getElementById('statTenants').textContent = tenants.data?.tenants?.length ?? 0;
+      document.getElementById('statIpRules').textContent = rules.data?.rules?.length ?? 0;
+    }
+    
+    async function loadUsers() {
+      const tenantId = document.getElementById('tenantFilter')?.value || '';
+      const query = tenantId ? `?tenant_id=${tenantId}` : '';
+      const json = await apiCall(`/admin/users${query}`);
+      const tbody = document.getElementById('usersTable');
+      tbody.innerHTML = '';
+      (json.data?.users || []).forEach(u => {
+        tbody.innerHTML += `<tr>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.is_active?'ok':'bad'}">${u.is_active?'Aktif':'Diblokir'}</span></td>
+      <td><span class="badge ${u.is_email_verified?'ok':'bad'}">${u.is_email_verified?'Ya':'Belum'}</span></td>
+      <td class="actions">
+        <button class="btn-secondary" onclick="userAction('${u.id}','${u.is_active?'block':'unblock'}')">${u.is_active?'Block':'Unblock'}</button>
+        <button class="btn-danger" onclick="userAction('${u.id}','reset-mfa')">Reset MFA</button>
+      </td>
+    </tr>`;
+      });
+      document.getElementById('statUsers').textContent = json.data?.users?.length ?? 0;
+    }
+    
+    async function userAction(userId, action) {
+      const json = await apiCall(`/admin/users/${userId}/${action}`, { method: 'POST' });
+      if (json.success) {
+        showToast('Berhasil diperbarui');
+        loadUsers();
+      }
+    }
+    
+    async function loadTenants() {
+      const json = await apiCall('/admin/tenants');
+      const tbody = document.getElementById('tenantsTable');
+      tbody.innerHTML = '';
+      (json.data?.tenants || []).forEach(t => {
+        tbody.innerHTML += `<tr><td>${t.name}</td><td>${t.email}</td><td><span class="badge ${t.is_active?'ok':'bad'}">${t.is_active?'Aktif':'Nonaktif'}</span></td></tr>`;
+      });
+    }
+    
+    async function loadIpRules() {
+      const json = await apiCall('/admin/ip-rules');
+      const tbody = document.getElementById('ipTable');
+      tbody.innerHTML = '';
+      (json.data?.rules || []).forEach(r => {
+        tbody.innerHTML += `<tr><td>${r.ip_address}</td><td><span class="badge ${r.rule_type==='blacklist'?'bad':'ok'}">${r.rule_type}</span></td><td>${r.reason||'-'}</td>
+      <td class="actions"><button class="btn-danger" onclick="deleteIpRule('${r.id}')">Hapus</button></td></tr>`;
+      });
+    }
+    
+    async function createIpRule() {
+      const tenant_id = document.getElementById('newIpTenant').value;
+      const ip_address = document.getElementById('newIpAddress').value;
+      const rule_type = document.getElementById('newIpType').value;
+      const json = await apiCall('/admin/ip-rules', { method: 'POST', body: JSON.stringify({ tenant_id, ip_address, rule_type }) });
+      if (json.success) {
+        showToast('Rule ditambahkan');
+        loadIpRules();
+      }
+    }
+    
+    async function deleteIpRule(id) {
+      const json = await apiCall(`/admin/ip-rules/${id}`, { method: 'DELETE' });
+      if (json.success) {
+        showToast('Rule dihapus');
+        loadIpRules();
+      }
+    }
+    
+    async function loadLogs() {
+      const json = await apiCall('/admin/logs?limit=50');
+      const tbody = document.getElementById('logsTable');
+      tbody.innerHTML = '';
+      (json.data?.logs || []).forEach(l => {
+        tbody.innerHTML += `<tr><td>${l.action}</td><td>${l.user_id||'-'}</td><td>${l.ip_address||'-'}</td><td>${new Date(l.created_at).toLocaleString('id-ID')}</td></tr>`;
+      });
+    }
+  </script>
+</body>
+
+</html>

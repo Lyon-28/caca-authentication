@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caca Auth — Dokumentasi API</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: #131722;
+      --border: #232838;
+      --text: #e6e9f0;
+      --muted: #8891a7;
+      --accent: #6366f1
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh
+    }
+    
+    .sidebar {
+      width: 260px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto
+    }
+    
+    .sidebar h1 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+    
+    .sidebar .section {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin: 18px 0 8px
+    }
+    
+    .sidebar a {
+      display: block;
+      color: var(--text);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 2px
+    }
+    
+    .sidebar a:hover {
+      background: #1b2130
+    }
+    
+    .main {
+      margin-left: 260px;
+      padding: 36px;
+      max-width: 900px;
+      width: 100%
+    }
+    
+    .endpoint {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px
+    }
+    
+    .endpoint-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+    
+    .method {
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700
+    }
+    
+    .method.get {
+      background: rgba(34, 197, 94, .15);
+      color: #22c55e
+    }
+    
+    .method.post {
+      background: rgba(99, 102, 241, .15);
+      color: #6366f1
+    }
+    
+    .method.patch {
+      background: rgba(234, 179, 8, .15);
+      color: #eab308
+    }
+    
+    .method.delete {
+      background: rgba(239, 68, 68, .15);
+      color: #ef4444
+    }
+    
+    .path {
+      font-family: monospace;
+      font-size: 14px
+    }
+    
+    .endpoint p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px
+    }
+    
+    pre {
+      background: #0b0e14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+      font-size: 12.5px;
+      line-height: 1.6
+    }
+    
+    h2 {
+      margin: 32px 0 16px;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+    
+    h2:first-child {
+      margin-top: 0
+    }
+    
+    .toplink {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      padding: 10px 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border)
+    }
+    
+    .mermaid {
+
+      border: 1px solid #e9ecef;
+      /* Garis tepi kontainer */
+      border-radius: 8px;
+      /* Membuat sudut melengkung */
+      padding: 16px;
+      /* Jarak dalam */
+      margin: 20px 0;
+      /* Jarak luar atas/bawah */
+      display: flex;
+      justify-content: center;
+      /* Posisi diagram agar berada di tengah */
+    }
+    
+    @media(max-width:768px) {
+      .sidebar {
+        display: none
+      }
+      
+      .main {
+        margin-left: 0;
+        padding: 20px
+      }
+    }
+  </style>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.15.0/mermaid.min.js"></script>
+</head>
+
+<body>
+  <div class="sidebar">
+    <h1><i class="fa-solid fa-shield-halved"></i> Caca Auth</h1>
+    <div class="section">Mulai</div>
+    <a href="#intro">Pengenalan</a>
+    <a href="#auth-flow">Alur Autentikasi</a>
+    <div class="section">Tenant</div>
+    <a href="#tenant">Register & Login Tenant</a>
+    <div class="section">Auth</div>
+    <a href="#auth-basic">Email & Password</a>
+    <a href="#auth-passwordless">Magic Link & OTP</a>
+    <a href="#auth-oauth">Social Login</a>
+    <a href="#auth-session">Session & Logout</a>
+    <div class="section">User</div>
+    <a href="#profile">Profil & Avatar</a>
+    <a href="#mfa">MFA (TOTP)</a>
+    <div class="section">Lainnya</div>
+    <a href="#health">Health & Metrics</a>
+    <a href="/docs">Swagger UI ↗</a>
+  </div>
+  <div class="main">
+    <h2 id="intro"><i class="fa-solid fa-book"></i> Pengenalan</h2>
+    <p style="color:var(--muted);margin-bottom:16px">Caca Auth adalah Auth-as-a-Service multi-tenant. Setiap aplikasi (tenant) mendapat sepasang API key: <code>caca-sk_</code> untuk server-side dan <code>caca-pk_</code> untuk client-side. Kirim <code>X-API-Key</code> di setiap request auth.</p>
+    
+    <h2 id="auth-flow"><i class="fa-solid fa-diagram-project"></i> Alur Autentikasi</h2>
+    
+    <h3 style="margin:20px 0 10px;font-size:16px;color:var(--muted)">1. Register & Login Email/Password</h3>
+    <div class="mermaid">
+      sequenceDiagram
+      participant C as Client
+      participant A as Caca Auth API
+      participant D as Database
+      participant E as Email Provider
+      
+      C->>A: POST /auth/register (X-API-Key)
+      A->>D: Simpan user (is_email_verified=false)
+      A->>A: Generate access_token + refresh_token
+      A->>E: Kirim email verifikasi (hybrid fallback)
+      A-->>C: 200 tokens + user data
+      
+      Note over C,A: User bisa langsung login & akses endpoint umum
+      
+      C->>A: POST /auth/login
+      A->>D: Cek kredensial + lockout status
+      alt kredensial valid
+      A->>D: Simpan session (device, IP, lokasi)
+      A-->>C: 200 tokens baru
+      else kredensial salah
+      A->>D: Naikkan failed_login_attempts
+      A-->>C: 401 invalid credentials
+      end
+    </div>
+    
+    <h3 style="margin:20px 0 10px;font-size:16px;color:var(--muted)">2. Refresh Token & Logout</h3>
+    <div class="mermaid">
+      sequenceDiagram
+      participant C as Client
+      participant A as Caca Auth API
+      participant R as Redis
+      participant D as Database
+      
+      C->>A: POST /auth/refresh (refresh_token)
+      A->>D: Validasi hash token, cek revoked/expired
+      A->>D: Revoke token lama, buat sesi baru
+      A-->>C: 200 access_token + refresh_token baru
+      
+      C->>A: POST /auth/logout (access_token, refresh_token)
+      A->>R: Blacklist jti access_token (TTL = sisa masa berlaku)
+      A->>D: Revoke refresh_token di DB
+      A-->>C: 200 logged_out
+    </div>
+    
+    <h3 style="margin:20px 0 10px;font-size:16px;color:var(--muted)">3. OAuth (Google/GitHub/dkk)</h3>
+    <div class="mermaid">
+      sequenceDiagram
+      participant C as Client
+      participant A as Caca Auth API
+      participant P as OAuth Provider
+      participant D as Database
+      
+      C->>A: GET /auth/oauth/{provider}/start
+      A->>A: Generate state (+ PKCE jika Twitter)
+      A-->>C: authorize_url
+      C->>P: Redirect user ke provider
+      P-->>C: Redirect balik dengan code+state
+      C->>A: GET /auth/oauth/{provider}/callback
+      A->>P: Tukar code dengan access_token
+      A->>P: Ambil user info
+      A->>D: Cari/buat user + simpan OAuthAccount
+      A->>D: Buat session, email otomatis terverifikasi
+      A-->>C: Redirect ke frontend dengan tokens
+    </div>
+    
+    <h3 style="margin:20px 0 10px;font-size:16px;color:var(--muted)">4. Suspicious Activity Detection</h3>
+    <div class="mermaid">
+      flowchart TD
+      A[Login berhasil] --> B{Lokasi dikenal?}
+      B -->|Tidak| C[Tambah alasan: lokasi baru]
+      B -->|Ya| D{Device dikenal?}
+      C --> D
+      D -->|Tidak| E[Tambah alasan: device baru]
+      D -->|Ya| F{Jam wajar 06-23?}
+      E --> F
+      F -->|Tidak| G[Tambah alasan: waktu tidak biasa]
+      F -->|Ya| H{Ada alasan terkumpul?}
+      G --> H
+      H -->|Ya| I[Kirim email suspicious_activity]
+      H -->|Tidak| J[Selesai, tidak ada alert]
+    </div>
+    
+    <h2 id="tenant"><i class="fa-solid fa-building"></i> Tenant</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/tenant/register</span></div>
+      <p>Daftar sebagai tenant baru dan dapatkan API key.</p>
+      <pre>{
+  "name": "My App",
+  "email": "dev@myapp.com",
+  "password": "Str0ngP@ss!"
+}</pre>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/tenant/login</span></div>
+      <p>Login sebagai tenant untuk melihat dashboard.</p>
+    </div>
+    
+    <h2 id="auth-basic"><i class="fa-solid fa-key"></i> Email & Password</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/register</span></div>
+      <p>Header: <code>X-API-Key: caca-sk_xxx</code>. Password minimal 8 karakter, kombinasi huruf besar, kecil, angka, simbol.</p>
+      <pre>{
+  "email": "user@example.com",
+  "password": "Str0ngP@ss!"
+}</pre>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/login</span></div>
+      <p>Login dengan email & password. Akun terkunci otomatis setelah 5x gagal.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/refresh</span></div>
+      <p>Tukar refresh_token dengan pasangan token baru.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/forgot-password</span></div>
+      <p>Kirim email reset password (token berlaku 1 jam).</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/change-password</span></div>
+      <p>Butuh email terverifikasi. Validasi password lama.</p>
+    </div>
+    
+    <h2 id="auth-passwordless"><i class="fa-solid fa-wand-magic-sparkles"></i> Magic Link & OTP</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/magic-link/request</span></div>
+      <p>Kirim link login tanpa password ke email (berlaku 15 menit).</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/otp/request</span></div>
+      <p>Kirim kode OTP 6 digit via SMS/WhatsApp (berlaku 5 menit).</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/anonymous</span></div>
+      <p>Login sebagai user anonim tanpa kredensial apapun.</p>
+    </div>
+    
+    <h2 id="auth-oauth"><i class="fa-brands fa-google"></i> Social Login</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method get">GET</span><span class="path">/auth/oauth/{provider}/start</span></div>
+      <p>provider: google, github, apple, facebook, microsoft, twitter, linkedin, discord, instagram.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method get">GET</span><span class="path">/auth/oauth/{provider}/callback</span></div>
+      <p>Redirect otomatis ke frontend dengan token setelah OAuth sukses.</p>
+    </div>
+    
+    <h2 id="auth-session"><i class="fa-solid fa-mobile-screen"></i> Session & Logout</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method get">GET</span><span class="path">/auth/sessions</span></div>
+      <p>List semua device aktif milik user (IP, lokasi, waktu aktif terakhir).</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method delete">DELETE</span><span class="path">/auth/sessions/{id}</span></div>
+      <p>Revoke satu device spesifik.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/auth/logout-all</span></div>
+      <p>Logout dari semua device sekaligus.</p>
+    </div>
+    
+    <h2 id="profile"><i class="fa-solid fa-user"></i> Profil & Avatar</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method patch">PATCH</span><span class="path">/profile</span></div>
+      <p>Update nama, bio, tanggal lahir.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/profile/avatar</span></div>
+      <p>Upload avatar (multipart/form-data), 500KB-5MB, auto-resize ke 512x512.</p>
+    </div>
+    
+    <h2 id="mfa"><i class="fa-solid fa-lock"></i> MFA (TOTP)</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/mfa/totp/setup</span></div>
+      <p>Dapatkan secret & QR code untuk Google Authenticator/Authy/1Password.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method post">POST</span><span class="path">/mfa/totp/enable</span></div>
+      <p>Konfirmasi setup dengan kode 6 digit dari app authenticator.</p>
+    </div>
+    
+    <h2 id="health"><i class="fa-solid fa-heart-pulse"></i> Health & Metrics</h2>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method get">GET</span><span class="path">/health/db</span></div>
+      <p>Status koneksi database & response time.</p>
+    </div>
+    <div class="endpoint">
+      <div class="endpoint-head"><span class="method get">GET</span><span class="path">/metrics/overview</span></div>
+      <p>DAU, MAU, total user, login success/failure rate (30 hari terakhir).</p>
+    </div>
+    
+    <p style="color:var(--muted);margin-top:30px">Dokumentasi interaktif lengkap: <a href="/docs" style="color:var(--accent)">Swagger UI</a> · <a href="/redoc" style="color:var(--accent)">ReDoc</a></p>
+  </div>
+  
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { background: '#131722', primaryColor: '#6366f1', primaryTextColor: '#e6e9f0', lineColor: '#8891a7', secondaryColor: '#232838', tertiaryColor: '#0b0e14' } });
+  </script>
+</body>
+
+</html>
