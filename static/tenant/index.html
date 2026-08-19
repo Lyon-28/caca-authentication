@@ -1,486 +1,920 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Caca Auth — Tenant Dashboard</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-  <style>
-    :root {
-      --bg: #0b0e14;
-      --panel: #131722;
-      --border: #232838;
-      --text: #e6e9f0;
-      --muted: #8891a7;
-      --accent: #6366f1;
-      --danger: #ef4444;
-      --success: #22c55e;
-      --warn: #eab308
-    }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh
-    }
-    
-    .login-screen {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px
-    }
-    
-    .login-box {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 36px;
-      width: 100%;
-      max-width: 400px
-    }
-    
-    .login-box h1 {
-      font-size: 22px;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
-    
-    .login-box p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 24px
-    }
-    
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      background: #0b0e14;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 14px;
-      margin-bottom: 12px
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: var(--accent)
-    }
-    
-    button {
-      width: 100%;
-      padding: 12px;
-      background: var(--accent);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px
-    }
-    
-    button:hover {
-      opacity: .9
-    }
-    
-    .tab-switch {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      background: #0b0e14;
-      border-radius: 10px;
-      padding: 4px
-    }
-    
-    .tab-switch button {
-      background: transparent;
-      color: var(--muted);
-      padding: 8px
-    }
-    
-    .tab-switch button.active {
-      background: var(--accent);
-      color: #fff
-    }
-    
-    .error-msg {
-      color: var(--danger);
-      font-size: 13px;
-      margin-top: 8px
-    }
-    
-    .app {
-      display: none
-    }
-    
-    .app.active {
-      display: block
-    }
-    
-    .topbar {
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10
-    }
-    
-    .topbar h1 {
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
-    
-    .logout-btn {
-      width: auto;
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--border);
-      font-size: 13px
-    }
-    
-    .content {
-      padding: 24px;
-      max-width: 900px;
-      margin: 0 auto
-    }
-    
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px;
-      margin-bottom: 16px
-    }
-    
-    .card h2 {
-      font-size: 15px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px
-    }
-    
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px
-    }
-    
-    .stat {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px
-    }
-    
-    .stat .label {
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .5px
-    }
-    
-    .stat .value {
-      font-size: 26px;
-      font-weight: 700;
-      margin-top: 6px
-    }
-    
-    .progress-bar {
-      height: 8px;
-      background: #0b0e14;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 10px
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 20px;
-      transition: width .3s
-    }
-    
-    .progress-fill.warn {
-      background: var(--warn)
-    }
-    
-    .progress-fill.danger {
-      background: var(--danger)
-    }
-    
-    .key-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #0b0e14;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 10px;
-      font-family: monospace;
-      font-size: 13px
-    }
-    
-    .key-row .label-tag {
-      background: #232838;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--muted);
-      font-family: -apple-system, sans-serif
-    }
-    
-    .key-row code {
-      flex: 1;
-      word-break: break-all
-    }
-    
-    .copy-btn {
-      width: auto;
-      padding: 6px 10px;
-      font-size: 12px;
-      background: #232838
-    }
-    
-    .warning-box {
-      background: rgba(239, 68, 68, .1);
-      border: 1px solid rgba(239, 68, 68, .3);
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 13px;
-      color: #f87171;
-      margin-bottom: 16px;
-      display: none
-    }
-    
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      padding: 14px 18px;
-      border-radius: 10px;
-      display: none;
-      z-index: 100
-    }
-    
-    @media(max-width:640px) {
-      .content {
-        padding: 14px
-      }
-      
-      .topbar {
-        padding: 14px
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Caca Auth — Tenant Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-0:#05060a; --bg-1:#0b0d14; --bg-2:#12141d;
+  --surface:#161923; --surface-2:#1c202c;
+  --border:#262b3a; --border-soft:#1e222e;
+  --text:#eef0f6; --text-dim:#9aa1b5; --text-faint:#5c6378;
+  --accent:#7c5cff; --accent-2:#00e5c7;
+  --accent-grad:linear-gradient(135deg,#7c5cff 0%,#00c2ff 50%,#00e5c7 100%);
+  --danger:#ff5c7c; --warn:#ffb84d; --success:#33e2a0;
+  --radius:18px; --radius-sm:12px;
+  --shadow-lg:0 20px 60px -20px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  font-family:'Plus Jakarta Sans', sans-serif;
+  background:
+    radial-gradient(circle at 15% -10%, rgba(124,92,255,0.18), transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(0,229,199,0.12), transparent 35%),
+    var(--bg-0);
+  color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{ background:var(--accent); color:#fff; }
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:10px;}
+
+.app-shell{ max-width:520px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; }
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px 20px; position:sticky; top:0; z-index:50;
+  background:rgba(5,6,10,0.7); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border-soft);
+}
+.brand{ display:flex; align-items:center; gap:10px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px; }
+.brand-mark{
+  width:34px; height:34px; border-radius:10px; background:var(--accent-grad);
+  display:flex; align-items:center; justify-content:center; font-size:15px; color:#0a0a0f; font-weight:800;
+  box-shadow:0 6px 20px -6px rgba(124,92,255,0.6);
+}
+.brand-tag{ font-size:10px; color:var(--text-faint); font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+.topbar-actions{ display:flex; gap:8px; }
+.icon-btn{
+  width:38px; height:38px; border-radius:12px; border:1px solid var(--border); background:var(--surface);
+  color:var(--text-dim); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.2s; font-size:14px;
+}
+.icon-btn:hover{ color:var(--text); border-color:var(--accent); transform:translateY(-1px); }
+
+.main{ flex:1; padding:24px 20px 100px; }
+.view{ display:none; animation:fadeUp .35s ease; }
+.view.active{ display:block; }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+.view-head{ margin-bottom:22px; }
+.view-eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-2); font-weight:700;
+  margin-bottom:6px; display:flex; align-items:center; gap:6px;
+}
+.view-title{ font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:700; margin-bottom:6px; }
+.view-sub{ color:var(--text-dim); font-size:14px; line-height:1.5; }
+
+.card{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--bg-1) 100%);
+  border:1px solid var(--border); border-radius:var(--radius); padding:22px; margin-bottom:16px; position:relative; overflow:hidden;
+}
+.card::before{ content:""; position:absolute; inset:0 0 auto 0; height:1px; background:linear-gradient(90deg, transparent, rgba(124,92,255,0.5), transparent); }
+.card-title{ font-weight:700; font-size:15px; margin-bottom:14px; display:flex; align-items:center; gap:8px; justify-content:space-between; }
+.card-title span{ display:flex; align-items:center; gap:8px; }
+.card-title i{ color:var(--accent-2); }
+
+.field{ margin-bottom:16px; }
+.field label{ display:block; font-size:12.5px; font-weight:600; color:var(--text-dim); margin-bottom:7px; }
+.input-wrap{ position:relative; display:flex; align-items:center; }
+.input-wrap i.fa-icon-left{ position:absolute; left:14px; color:var(--text-faint); font-size:14px; pointer-events:none; }
+input, textarea, select{
+  width:100%; background:var(--bg-1); border:1px solid var(--border); color:var(--text);
+  padding:13px 14px; border-radius:var(--radius-sm); font-size:14.5px; font-family:inherit; transition:.2s;
+}
+.input-wrap input{ padding-left:40px; }
+.input-wrap.has-toggle input{ padding-right:42px; }
+input:focus, textarea:focus, select:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(124,92,255,0.18); }
+input::placeholder{ color:var(--text-faint); }
+.toggle-eye{ position:absolute; right:12px; background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:6px; }
+.toggle-eye:hover{ color:var(--text); }
+input.input-error, textarea.input-error{ border-color:var(--danger) !important; box-shadow:0 0 0 3px rgba(255,92,124,0.15) !important; }
+.hint{ font-size:12px; color:var(--text-faint); margin-top:6px; }
+.hint.err{ color:var(--danger); }
+.mb-0{margin-bottom:0;} .mt-8{margin-top:8px;} .mt-16{margin-top:16px;}
+
+.btn{
+  width:100%; border:none; border-radius:var(--radius-sm); padding:14px 18px;
+  font-family:inherit; font-weight:700; font-size:14.5px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:.2s; position:relative; overflow:hidden;
+}
+.btn-primary{ background:var(--accent-grad); color:#0a0a0f; box-shadow:0 10px 30px -10px rgba(124,92,255,0.6); }
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 14px 34px -10px rgba(124,92,255,0.75); }
+.btn-outline{ background:transparent; border:1px solid var(--border); color:var(--text); }
+.btn-outline:hover{ border-color:var(--accent); color:var(--accent-2); }
+.btn-ghost{ background:var(--surface-2); color:var(--text-dim); }
+.btn-ghost:hover{ color:var(--text); }
+.btn-danger{ background:rgba(255,92,124,0.12); color:var(--danger); border:1px solid rgba(255,92,124,0.3); }
+.btn-danger:hover{ background:rgba(255,92,124,0.2); }
+.btn-sm{ padding:9px 14px; font-size:13px; width:auto; }
+.btn[disabled]{ opacity:.55; cursor:not-allowed; transform:none !important; }
+.btn .spinner{ display:none; }
+.btn.loading .spinner{ display:inline-block; }
+.btn.loading .btn-label{ opacity:.6; }
+.spinner{ width:16px; height:16px; border-radius:50%; border:2px solid rgba(0,0,0,0.25); border-top-color:#0a0a0f; animation:spin .7s linear infinite; }
+.btn-outline .spinner, .btn-ghost .spinner{ border:2px solid rgba(255,255,255,0.2); border-top-color:var(--text); }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.btn-row{ display:flex; gap:10px; }
+.btn-row .btn{ flex:1; }
+.link-row{ text-align:center; margin-top:16px; font-size:13.5px; color:var(--text-dim); }
+.link-row a{ color:var(--accent-2); text-decoration:none; font-weight:600; cursor:pointer; }
+.link-row a:hover{ text-decoration:underline; }
+
+/* Stat grid */
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.stat-box{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; }
+.stat-box .stat-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.stat-box .stat-icon{ width:30px; height:30px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--accent-2); font-size:13px; }
+.stat-box .num{ font-family:'Space Grotesk'; font-size:22px; font-weight:700; }
+.stat-box .lbl{ font-size:11px; color:var(--text-faint); margin-top:2px; }
+.stat-box .trend{ font-size:10.5px; font-weight:700; margin-top:6px; display:flex; align-items:center; gap:4px; }
+.trend.up{ color:var(--success); } .trend.down{ color:var(--danger); }
+
+/* Quota bar */
+.quota-bar-wrap{ background:var(--bg-1); border-radius:10px; height:8px; overflow:hidden; margin-top:8px; }
+.quota-bar-fill{ height:100%; background:var(--accent-grad); border-radius:10px; transition:width .5s ease; }
+.quota-label{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--text-faint); margin-top:6px; }
+
+/* API Key box */
+.key-box{
+  background:var(--bg-1); border:1px dashed var(--border); border-radius:12px; padding:14px;
+  margin-bottom:12px;
+}
+.key-box-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.key-label{ font-size:11.5px; font-weight:700; color:var(--text-dim); display:flex; align-items:center; gap:6px; }
+.key-label.public{ color:var(--accent-2); }
+.key-label.secret{ color:var(--warn); }
+.key-value{
+  font-family:monospace; font-size:12.5px; word-break:break-all; color:var(--text);
+  display:flex; align-items:center; gap:8px; background:var(--bg-0); padding:10px 12px; border-radius:8px;
+}
+.key-value.masked{ letter-spacing:.05em; }
+.key-actions{ display:flex; gap:6px; margin-left:auto; flex-shrink:0; }
+.mini-btn{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:13px; padding:4px 6px; }
+.mini-btn:hover{ color:var(--accent-2); }
+
+/* List item */
+.list-item{
+  display:flex; align-items:center; gap:12px; padding:14px; border-radius:14px;
+  border:1px solid var(--border-soft); background:var(--bg-1); margin-bottom:10px; transition:.2s;
+}
+.list-item .li-icon{ width:38px; height:38px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--accent-2); flex-shrink:0; }
+.list-item .li-body{ flex:1; min-width:0; }
+.list-item .li-title{ font-size:13.5px; font-weight:600; }
+.list-item .li-sub{ font-size:11.5px; color:var(--text-faint); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Switch */
+.switch{ position:relative; width:44px; height:25px; flex-shrink:0; }
+.switch input{ opacity:0; width:0; height:0; }
+.slider-toggle{ position:absolute; inset:0; background:var(--border); border-radius:20px; cursor:pointer; transition:.3s; }
+.slider-toggle::before{ content:""; position:absolute; width:19px; height:19px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.3s; }
+input:checked + .slider-toggle{ background:var(--accent-grad); }
+input:checked + .slider-toggle::before{ transform:translateX(19px); }
+
+/* Recipients table */
+.recipient-row{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--border-soft); font-size:12.5px;
+}
+.recipient-row:last-child{ border-bottom:none; }
+.recipient-avatar{ width:28px; height:28px; border-radius:50%; background:var(--accent-grad); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#0a0a0f; flex-shrink:0; }
+.recipient-email{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-dim); }
+
+/* Bottom nav */
+.bottom-nav{
+  position:fixed; bottom:0; left:0; right:0; max-width:520px; margin:0 auto;
+  background:rgba(11,13,20,0.85); backdrop-filter:blur(20px); border-top:1px solid var(--border-soft);
+  display:flex; justify-content:space-around; padding:10px 8px calc(10px + env(safe-area-inset-bottom)); z-index:60;
+}
+.nav-item{
+  display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--text-faint);
+  background:none; border:none; cursor:pointer; font-size:10.5px; font-weight:600; padding:6px 10px; border-radius:12px; transition:.2s;
+}
+.nav-item i{ font-size:17px; }
+.nav-item.active{ color:var(--accent-2); }
+
+/* Toast */
+.toast-stack{ position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:999; display:flex; flex-direction:column; gap:10px; width:calc(100% - 32px); max-width:480px; pointer-events:none; }
+.toast{
+  pointer-events:auto; display:flex; align-items:flex-start; gap:11px; background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; padding:13px 14px; box-shadow:var(--shadow-lg); animation:toastIn .35s cubic-bezier(.2,.9,.3,1.3); backdrop-filter:blur(10px);
+}
+.toast.hide{ animation:toastOut .3s ease forwards; }
+@keyframes toastIn{ from{ opacity:0; transform:translateY(-16px) scale(.95);} to{opacity:1; transform:translateY(0) scale(1);} }
+@keyframes toastOut{ to{ opacity:0; transform:translateY(-10px) scale(.95);} }
+.toast-icon{ width:30px; height:30px; border-radius:9px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; }
+.toast.success .toast-icon{ background:rgba(51,226,160,0.15); color:var(--success); }
+.toast.error .toast-icon{ background:rgba(255,92,124,0.15); color:var(--danger); }
+.toast.warn .toast-icon{ background:rgba(255,184,77,0.15); color:var(--warn); }
+.toast.info .toast-icon{ background:rgba(0,194,255,0.15); color:#00c2ff; }
+.toast-content{ flex:1; } .toast-title{ font-size:13.5px; font-weight:700; margin-bottom:2px; } .toast-msg{ font-size:12.5px; color:var(--text-dim); line-height:1.4; }
+.toast-close{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:12px; padding:2px; }
+
+/* Modal */
+.modal-overlay{ position:fixed; inset:0; background:rgba(5,6,10,0.75); backdrop-filter:blur(6px); display:none; align-items:flex-end; justify-content:center; z-index:200; }
+.modal-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+@keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+.modal-sheet{ width:100%; max-width:520px; background:var(--bg-1); border:1px solid var(--border); border-bottom:none; border-radius:22px 22px 0 0; padding:22px 20px calc(22px + env(safe-area-inset-bottom)); animation:sheetUp .3s cubic-bezier(.2,.9,.3,1.1); }
+@keyframes sheetUp{ from{ transform:translateY(100%);} to{ transform:translateY(0);} }
+.modal-handle{ width:40px; height:4px; background:var(--border); border-radius:4px; margin:0 auto 18px; }
+.modal-icon{ width:52px; height:52px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:20px; background:rgba(255,92,124,0.12); color:var(--danger); }
+.modal-title{ text-align:center; font-weight:700; font-size:17px; margin-bottom:6px; }
+.modal-text{ text-align:center; color:var(--text-dim); font-size:13.5px; line-height:1.5; margin-bottom:20px; }
+
+.page-loader{ position:fixed; inset:0; background:rgba(5,6,10,0.6); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:300; }
+.page-loader.show{ display:flex; }
+.page-loader .ring{ width:44px; height:44px; border-radius:50%; border:3px solid rgba(124,92,255,0.2); border-top-color:var(--accent); animation:spin .8s linear infinite; }
+
+.empty-state{ text-align:center; padding:40px 20px; color:var(--text-faint); }
+.empty-state i{ font-size:34px; margin-bottom:12px; opacity:.5; }
+.empty-state p{ font-size:13px; }
+.small-note{ font-size:12px; color:var(--text-faint); line-height:1.5; }
+
+.tabs{ display:flex; gap:6px; background:var(--bg-1); padding:5px; border-radius:12px; margin-bottom:16px; border:1px solid var(--border); }
+.tab-btn{ flex:1; border:none; background:transparent; color:var(--text-faint); padding:9px; border-radius:9px; font-size:12.5px; font-weight:700; cursor:pointer; transition:.2s; }
+.tab-btn.active{ background:var(--accent-grad); color:#0a0a0f; }
+.tab-panel{ display:none; } .tab-panel.active{ display:block; }
+</style>
 </head>
-
 <body>
-  
-  <div class="login-screen" id="loginScreen">
-    <div class="login-box">
-      <h1><i class="fa-solid fa-cube"></i> Caca Auth</h1>
-      <p>Dashboard developer — kelola API key aplikasi kamu</p>
-      <div class="tab-switch">
-        <button id="tabLogin" class="active" onclick="switchAuthTab('login')">Login</button>
-        <button id="tabRegister" onclick="switchAuthTab('register')">Daftar Tenant Baru</button>
-      </div>
-      <div id="formLogin">
-        <input type="email" id="loginEmail" placeholder="Email">
-        <input type="password" id="loginPassword" placeholder="Password">
-        <button onclick="tenantLogin()">Masuk</button>
-      </div>
-      <div id="formRegister" style="display:none">
-        <input type="text" id="regName" placeholder="Nama aplikasi">
-        <input type="email" id="regEmail" placeholder="Email">
-        <input type="password" id="regPassword" placeholder="Password (min 8, kombinasi huruf besar/kecil/angka/simbol)">
-        <button onclick="tenantRegister()">Daftar</button>
-      </div>
-      <div class="error-msg" id="authError"></div>
-    </div>
-  </div>
-  
-  <div class="app" id="app">
-    <div class="topbar">
-      <h1><i class="fa-solid fa-cube"></i> <span id="tenantName">Dashboard</span></h1>
-      <button class="logout-btn" onclick="tenantLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
-    </div>
-    <div class="content">
-      
-      <div class="warning-box" id="newKeyWarning">
-        <i class="fa-solid fa-triangle-exclamation"></i> Secret key baru dibuat. Simpan sekarang — tidak akan ditampilkan penuh lagi setelah kamu meninggalkan halaman ini.
-      </div>
-      
-      <div class="grid" id="statsGrid"></div>
-      
-      <div class="card">
-        <h2><i class="fa-solid fa-key"></i> API Keys</h2>
-        <div class="key-row">
-          <span class="label-tag">SECRET</span>
-          <code id="secretKeyDisplay">•••</code>
-          <button class="copy-btn" onclick="copyText(document.getElementById('secretKeyDisplay').textContent)">Copy</button>
-        </div>
-        <div class="key-row">
-          <span class="label-tag">PUBLIC</span>
-          <code id="publicKeyDisplay">•••</code>
-          <button class="copy-btn" onclick="copyText(document.getElementById('publicKeyDisplay').textContent)">Copy</button>
-        </div>
-        <button onclick="regenerateKeys()" style="width:auto;padding:10px 18px;background:var(--danger);margin-top:6px"><i class="fa-solid fa-rotate"></i> Regenerate Keys</button>
-      </div>
-      
-      <div class="card">
-        <h2><i class="fa-solid fa-gauge"></i> Kuota Bulanan</h2>
-        <p id="usageText" style="color:var(--muted);font-size:13px;margin-bottom:4px"></p>
-        <div class="progress-bar">
-          <div class="progress-fill" id="usageBar" style="width:0%"></div>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-  
-  <div class="toast" id="toast"></div>
-  
-  <script>
-    const API_BASE = window.location.origin;
-    let tenantToken = localStorage.getItem('caca_tenant_token');
-    let lastRegeneratedKey = null;
-    
-    if (tenantToken) showApp();
-    
-    function switchAuthTab(tab) {
-      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-      document.getElementById('formLogin').style.display = tab === 'login' ? 'block' : 'none';
-      document.getElementById('formRegister').style.display = tab === 'register' ? 'block' : 'none';
-      document.getElementById('authError').textContent = '';
-    }
-    
-    async function tenantLogin() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const errEl = document.getElementById('authError');
-      errEl.textContent = '';
-      try {
-        const res = await fetch(`${API_BASE}/tenant/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-        const json = await res.json();
-        if (!json.success) { errEl.textContent = json.error.message; return; }
-        tenantToken = json.data.token;
-        localStorage.setItem('caca_tenant_token', tenantToken);
-        showApp();
-      } catch (e) { errEl.textContent = 'Gagal terhubung ke server'; }
-    }
-    
-    async function tenantRegister() {
-      const name = document.getElementById('regName').value;
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-      const errEl = document.getElementById('authError');
-      errEl.textContent = '';
-      try {
-        const res = await fetch(`${API_BASE}/tenant/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }) });
-        const json = await res.json();
-        if (!json.success) { errEl.textContent = json.error.message || JSON.stringify(json.error.details); return; }
-        lastRegeneratedKey = json.data.secret_key;
-        document.getElementById('loginEmail').value = email;
-        document.getElementById('loginPassword').value = password;
-        switchAuthTab('login');
-        await tenantLogin();
-      } catch (e) { errEl.textContent = 'Gagal terhubung ke server'; }
-    }
-    
-    function tenantLogout() {
-      fetch(`${API_BASE}/tenant/logout`, { method: 'POST', headers: { 'Authorization': `Bearer ${tenantToken}` } });
-      localStorage.removeItem('caca_tenant_token');
-      location.reload();
-    }
-    
-    function showApp() {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').classList.add('active');
-      loadDashboard();
-    }
-    
-    async function apiCall(path, options = {}) {
-      const res = await fetch(`${API_BASE}${path}`, { ...options, headers: { ...options.headers, 'Authorization': `Bearer ${tenantToken}`, 'Content-Type': 'application/json' } });
-      if (res.status === 401) {
-        localStorage.removeItem('caca_tenant_token');
-        location.reload();
-        return { success: false };
-      }
-      return res.json();
-    }
-    
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 2500);
-    }
-    
-    function copyText(text) {
-      navigator.clipboard.writeText(text);
-      showToast('Disalin ke clipboard');
-    }
-    
-    async function loadDashboard() {
-      const json = await apiCall('/tenant/dashboard');
-      if (!json.success) return;
-      const d = json.data;
-      
-      document.getElementById('tenantName').textContent = d.tenant.name;
-      
-      document.getElementById('statsGrid').innerHTML = `
-    <div class="stat"><div class="label">Total Users</div><div class="value">${d.total_users}</div></div>
-    <div class="stat"><div class="label">Plan</div><div class="value" style="font-size:18px;text-transform:capitalize">${d.tenant.plan}</div></div>
-    <div class="stat"><div class="label">Periode</div><div class="value" style="font-size:18px">${d.usage.period}</div></div>
-  `;
-      
-      document.getElementById('secretKeyDisplay').textContent = lastRegeneratedKey || d.api_keys.secret_key_preview;
-      document.getElementById('publicKeyDisplay').textContent = d.api_keys.public_key;
-      
-      if (lastRegeneratedKey) document.getElementById('newKeyWarning').style.display = 'block';
-      
-      const pct = d.usage.percentage;
-      document.getElementById('usageText').textContent = `${d.usage.requests_used.toLocaleString('id-ID')} / ${d.usage.requests_quota.toLocaleString('id-ID')} request (${pct}%)`;
-      const bar = document.getElementById('usageBar');
-      bar.style.width = Math.min(pct, 100) + '%';
-      bar.className = 'progress-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
-    }
-    
-    async function regenerateKeys() {
-      if (!confirm('Yakin? Key lama akan langsung tidak berlaku dan aplikasi yang masih pakai key lama akan gagal auth.')) return;
-      const json = await apiCall('/tenant/regenerate-keys', { method: 'POST' });
-      if (json.success) {
-        lastRegeneratedKey = json.data.secret_key;
-        showToast('Key berhasil di-regenerate');
-        loadDashboard();
-      }
-    }
-  </script>
-</body>
 
+<div class="app-shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div>
+        <div>Caca Auth</div>
+        <div class="brand-tag">Tenant Panel</div>
+      </div>
+    </div>
+    <div class="topbar-actions" id="topbarActions"></div>
+  </div>
+
+  <div class="main">
+
+    <!-- ===== LOGIN ===== -->
+    <section class="view active" id="view-login">
+      <div class="view-head">
+        <div class="view-eyebrow"><i class="fa-solid fa-building-shield"></i> Tenant Portal</div>
+        <div class="view-title">Masuk sebagai Tenant</div>
+        <div class="view-sub">Kelola API key, kuota, dan pengguna proyekmu.</div>
+      </div>
+      <div class="card">
+        <form id="formTenantLogin">
+          <div class="field">
+            <label>Email</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-envelope fa-icon-left"></i>
+              <input type="email" id="tLoginEmail" placeholder="tenant@email.com" required>
+            </div>
+          </div>
+          <div class="field mb-0">
+            <label>Password</label>
+            <div class="input-wrap has-toggle">
+              <i class="fa-solid fa-lock fa-icon-left"></i>
+              <input type="password" id="tLoginPassword" placeholder="••••••••" required>
+              <button type="button" class="toggle-eye" data-toggle="tLoginPassword"><i class="fa-solid fa-eye"></i></button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary mt-16">
+            <span class="spinner"></span>
+            <i class="fa-solid fa-arrow-right-to-bracket btn-label"></i>
+            <span class="btn-label">Masuk</span>
+          </button>
+        </form>
+      </div>
+      <div class="link-row">Belum punya akun tenant? <a onclick="showView('register')">Daftar sekarang</a></div>
+    </section>
+
+    <!-- ===== REGISTER ===== -->
+    <section class="view" id="view-register">
+      <div class="view-head">
+        <button class="icon-btn mb-0" onclick="showView('login')" style="margin-bottom:14px;"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="view-eyebrow"><i class="fa-solid fa-rocket"></i> Mulai</div>
+        <div class="view-title">Daftar Tenant Baru</div>
+        <div class="view-sub">Buat proyek dan dapatkan API key instan.</div>
+      </div>
+      <div class="card">
+        <form id="formTenantRegister">
+          <div class="field">
+            <label>Nama Proyek / Perusahaan</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-building fa-icon-left"></i>
+              <input type="text" id="tRegName" placeholder="Caca Inc." required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-envelope fa-icon-left"></i>
+              <input type="email" id="tRegEmail" placeholder="tenant@email.com" required>
+            </div>
+          </div>
+          <div class="field mb-0">
+            <label>Password</label>
+            <div class="input-wrap has-toggle">
+              <i class="fa-solid fa-lock fa-icon-left"></i>
+              <input type="password" id="tRegPassword" placeholder="Minimal 8 karakter" required>
+              <button type="button" class="toggle-eye" data-toggle="tRegPassword"><i class="fa-solid fa-eye"></i></button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary mt-16">
+            <span class="spinner"></span>
+            <i class="fa-solid fa-rocket btn-label"></i>
+            <span class="btn-label">Buat Akun Tenant</span>
+          </button>
+        </form>
+      </div>
+      <div class="link-row">Sudah punya akun? <a onclick="showView('login')">Masuk di sini</a></div>
+    </section>
+
+    <!-- ===== OVERVIEW / DASHBOARD ===== -->
+    <section class="view" id="view-overview">
+      <div class="view-head">
+        <div class="view-eyebrow"><i class="fa-solid fa-chart-line"></i> Overview</div>
+        <div class="view-title" id="overviewGreeting">Dashboard</div>
+        <div class="view-sub">Ringkasan aktivitas proyekmu.</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-users"></i></div></div>
+          <div class="num" id="statTotalUsers">-</div>
+          <div class="lbl">Total Pengguna</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-user-check"></i></div></div>
+          <div class="num" id="statVerified">-</div>
+          <div class="lbl">Terverifikasi</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-right-to-bracket"></i></div></div>
+          <div class="num" id="statLogins">-</div>
+          <div class="lbl">Login (30 hari)</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-top"><div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div></div>
+          <div class="num" id="statMfaUsers">-</div>
+          <div class="lbl">Pakai MFA</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span><i class="fa-solid fa-gauge-high"></i> Kuota Bulanan</span></div>
+        <div class="quota-bar-wrap"><div class="quota-bar-fill" id="quotaFill" style="width:0%"></div></div>
+        <div class="quota-label">
+          <span id="quotaUsed">0 dipakai</span>
+          <span id="quotaTotal">dari 0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span><i class="fa-solid fa-chart-pie"></i> Metode Autentikasi</span></div>
+        <div id="authMethodsList">
+          <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Memuat data...</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== API KEYS ===== -->
+    <section class="view" id="view-keys">
+      <div class="view-head">
+        <div class="view-eyebrow"><i class="fa-solid fa-key"></i> Kredensial</div>
+        <div class="view-title">API Keys</div>
+        <div class="view-sub">Gunakan public key di frontend, secret key hanya di server.</div>
+      </div>
+
+      <div class="card">
+        <div class="key-box">
+          <div class="key-box-head">
+            <div class="key-label public"><i class="fa-solid fa-globe"></i> PUBLIC KEY</div>
+          </div>
+          <div class="key-value" id="publicKeyValue">
+            <span id="publicKeyText">caca-pk_••••••••••••••••••••••••</span>
+            <div class="key-actions">
+              <button class="mini-btn" onclick="toggleKeyVisibility('public')"><i class="fa-solid fa-eye" id="publicKeyEyeIcon"></i></button>
+              <button class="mini-btn" onclick="copyKey('public')"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+          <p class="small-note mt-8">Aman digunakan di kode frontend/browser (client-side).</p>
+        </div>
+
+        <div class="key-box mb-0">
+          <div class="key-box-head">
+            <div class="key-label secret"><i class="fa-solid fa-lock"></i> SECRET KEY</div>
+          </div>
+          <div class="key-value" id="secretKeyValue">
+            <span id="secretKeyText">caca-sk_••••••••••••••••••••••••</span>
+            <div class="key-actions">
+              <button class="mini-btn" onclick="toggleKeyVisibility('secret')"><i class="fa-solid fa-eye" id="secretKeyEyeIcon"></i></button>
+              <button class="mini-btn" onclick="copyKey('secret')"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+          <p class="small-note mt-8" style="color:var(--warn);"><i class="fa-solid fa-triangle-exclamation"></i> Jangan pernah expose di frontend. Simpan hanya di server/environment variable.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span><i class="fa-solid fa-rotate"></i> Regenerasi Key</span></div>
+        <p class="small-note" style="margin-bottom:16px;">Meregenerasi key akan membuat key lama tidak berfungsi lagi. Semua integrasi yang memakai key lama harus diperbarui.</p>
+        <button class="btn btn-danger" onclick="confirmRegenerateKeys()" id="btnRegenerate">
+          <span class="spinner"></span>
+          <i class="fa-solid fa-rotate btn-label"></i>
+          <span class="btn-label">Regenerasi Kedua Key</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== NEWSLETTER ===== -->
+    <section class="view" id="view-newsletter">
+      <div class="view-head">
+        <div class="view-eyebrow"><i class="fa-solid fa-paper-plane"></i> Komunikasi</div>
+        <div class="view-title">Newsletter</div>
+        <div class="view-sub">Kirim pengumuman ke pengguna proyekmu.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-envelope-open-text"></i> Buat Pesan</div>
+        <form id="formNewsletter">
+          <div class="field">
+            <label>Subjek</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-heading fa-icon-left"></i>
+              <input type="text" id="newsletterSubject" placeholder="Update fitur terbaru!" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Isi Pesan</label>
+            <textarea id="newsletterBody" placeholder="Tulis isi newsletter di sini..." rows="5" required></textarea>
+          </div>
+          <div class="list-item" style="cursor:default;">
+            <div class="li-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div class="li-body"><div class="li-title">Hanya Email Terverifikasi</div><div class="li-sub">Kirim ke user yang sudah verifikasi email</div></div>
+            <label class="switch"><input type="checkbox" id="newsletterVerifiedOnly" checked><span class="slider-toggle"></span></label>
+          </div>
+          <div class="list-item mb-0" style="cursor:default;">
+            <div class="li-icon"><i class="fa-solid fa-bell-slash"></i></div>
+            <div class="li-body"><div class="li-title">Hormati Preferensi</div><div class="li-sub">Skip user yang matikan notifikasi</div></div>
+            <label class="switch"><input type="checkbox" id="newsletterRespectPref" checked><span class="slider-toggle"></span></label>
+          </div>
+
+          <button type="button" class="btn btn-outline mt-16" onclick="previewRecipients()" id="btnPreview">
+            <span class="spinner"></span>
+            <i class="fa-solid fa-users btn-label"></i>
+            <span class="btn-label">Preview Penerima</span>
+          </button>
+          <button type="submit" class="btn btn-primary mt-8">
+            <span class="spinner"></span>
+            <i class="fa-solid fa-paper-plane btn-label"></i>
+            <span class="btn-label">Kirim Newsletter</span>
+          </button>
+        </form>
+      </div>
+
+      <div class="card" id="recipientsCard" style="display:none;">
+        <div class="card-title">
+          <span><i class="fa-solid fa-list-check"></i> Preview Penerima</span>
+          <span id="recipientsCount" style="font-size:12px; color:var(--text-faint); font-weight:600;"></span>
+        </div>
+        <div id="recipientsList" style="max-height:280px; overflow-y:auto; border:1px solid var(--border-soft); border-radius:10px;"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="bottom-nav" id="bottomNav" style="display:none;">
+    <button class="nav-item active" data-nav="overview" onclick="showView('overview')"><i class="fa-solid fa-chart-line"></i>Overview</button>
+    <button class="nav-item" data-nav="keys" onclick="showView('keys')"><i class="fa-solid fa-key"></i>API Keys</button>
+    <button class="nav-item" data-nav="newsletter" onclick="showView('newsletter')"><i class="fa-solid fa-paper-plane"></i>Newsletter</button>
+  </div>
+
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-icon" id="modalIcon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="modal-title" id="modalTitle">Konfirmasi</div>
+    <div class="modal-text" id="modalText">Apakah kamu yakin?</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+      <button class="btn btn-danger" id="modalConfirmBtn">Ya, Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-loader" id="pageLoader"><div class="ring"></div></div>
+
+<script>
+const BASE = "https://caca-authentication.vercel.app";
+
+let state = {
+  tenantToken: localStorage.getItem("caca_tenant_token") || null,
+  tenant: null,
+  publicKey: null,
+  secretKey: null,
+  publicKeyVisible: false,
+  secretKeyVisible: false
+};
+
+let isRefreshingTenant = false;
+
+async function apiCall(path, { method = "GET", body, tenantAuth = false, query } = {}) {
+  const headers = { "Content-Type": "application/json" };
+  if (tenantAuth) {
+    if (!state.tenantToken) throw { message: "Sesi tenant tidak ditemukan, silakan login ulang." };
+    headers["Authorization"] = "Bearer " + state.tenantToken;
+  }
+  let url = BASE + path;
+  if (query) url += "?" + new URLSearchParams(query).toString();
+  
+  const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  let json = null;
+  try { json = await res.json(); } catch (e) {}
+  
+  if (!res.ok) {
+    if (res.status === 401 && tenantAuth) {
+      clearTenantSession();
+      updateNavVisibility();
+      showView("login");
+      toastWarn("Sesi Berakhir", "Silakan login kembali.");
+    }
+    throw buildApiError(res.status, json);
+  }
+  // BARU: unwrap {success, data, meta} jadi langsung data-nya
+  return json && json.success !== undefined ? json.data : json;
+}
+
+function buildApiError(status, json) {
+  if (status === 422 && json?.detail && Array.isArray(json.detail)) {
+    const fields = json.detail.map(d => ({ field: d.loc ? d.loc[d.loc.length - 1] : "unknown", msg: d.msg }));
+    return { status, data: json, message: fields.map(f => `${f.field}: ${f.msg}`).join(", "), fields };
+  }
+  // BARU: tangani format {success:false, error:{code, message}}
+  if (json?.error?.message) {
+    return { status, data: json, message: json.error.message, code: json.error.code };
+  }
+  const msg = (json && (json.detail || json.message)) || `Terjadi kesalahan (${status})`;
+  return { status, data: json, message: typeof msg === "string" ? msg : JSON.stringify(msg) };
+}
+
+/* ===== TOAST ===== */
+function toast(type, title, msg, duration=4000) {
+  const stack = document.getElementById("toastStack");
+  const icons = { success:"fa-circle-check", error:"fa-circle-xmark", warn:"fa-triangle-exclamation", info:"fa-circle-info" };
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.innerHTML = `
+    <div class="toast-icon"><i class="fa-solid ${icons[type]}"></i></div>
+    <div class="toast-content"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>
+    <button class="toast-close"><i class="fa-solid fa-xmark"></i></button>`;
+  stack.appendChild(el);
+  const remove = () => { el.classList.add("hide"); setTimeout(() => el.remove(), 280); };
+  el.querySelector(".toast-close").onclick = remove;
+  setTimeout(remove, duration);
+}
+const toastSuccess = (t,m) => toast("success", t, m);
+const toastError   = (t,m) => toast("error", t, m);
+const toastWarn    = (t,m) => toast("warn", t, m);
+const toastInfo    = (t,m) => toast("info", t, m);
+
+function showFieldErrors(err) {
+  document.querySelectorAll(".field-error").forEach(el => el.remove());
+  document.querySelectorAll("input.input-error").forEach(el => el.classList.remove("input-error"));
+  if (err.fields && err.fields.length) {
+    err.fields.forEach(f => {
+      const input = document.querySelector(`[id*="${f.field}" i]`);
+      if (input) {
+        input.classList.add("input-error");
+        const errEl = document.createElement("div");
+        errEl.className = "hint err field-error";
+        errEl.textContent = f.msg;
+        input.closest(".field")?.appendChild(errEl);
+      }
+    });
+    toastError("Periksa Input", "Beberapa field belum sesuai.");
+  } else {
+    toastError("Gagal", err.message);
+  }
+}
+
+/* ===== MODAL ===== */
+let modalConfirmCallback = null;
+function openModal({ icon="fa-triangle-exclamation", title, text, confirmLabel="Ya, Lanjutkan", onConfirm }) {
+  document.getElementById("modalIcon").innerHTML = `<i class="fa-solid ${icon}"></i>`;
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalText").textContent = text;
+  document.getElementById("modalConfirmBtn").textContent = confirmLabel;
+  modalConfirmCallback = onConfirm;
+  document.getElementById("modalOverlay").classList.add("show");
+}
+function closeModal(){ document.getElementById("modalOverlay").classList.remove("show"); }
+document.getElementById("modalConfirmBtn").addEventListener("click", () => { if (modalConfirmCallback) modalConfirmCallback(); closeModal(); });
+
+function confirmRegenerateKeys() {
+  openModal({
+    icon:"fa-rotate", title:"Regenerasi API Key?",
+    text:"Key lama akan langsung tidak berfungsi. Pastikan kamu siap update integrasi yang memakainya.",
+    confirmLabel:"Ya, Regenerasi", onConfirm: regenerateKeys
+  });
+}
+
+function showLoader(){ document.getElementById("pageLoader").classList.add("show"); }
+function hideLoader(){ document.getElementById("pageLoader").classList.remove("show"); }
+function setBtnLoading(btn, loading){ if(!btn) return; btn.disabled = loading; btn.classList.toggle("loading", loading); }
+
+/* ===== ROUTER ===== */
+function showView(name) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + name)?.classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.nav === name));
+  window.scrollTo({ top:0, behavior:"smooth" });
+
+  if (name === "overview") loadOverview();
+  if (name === "keys") loadKeys();
+}
+
+function updateNavVisibility() {
+  const loggedIn = !!state.tenantToken;
+  document.getElementById("bottomNav").style.display = loggedIn ? "flex" : "none";
+  const el = document.getElementById("topbarActions");
+  el.innerHTML = loggedIn ? `<button class="icon-btn" onclick="confirmTenantLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>` : "";
+}
+
+function confirmTenantLogout() {
+  openModal({ icon:"fa-right-from-bracket", title:"Keluar dari Tenant?", text:"Kamu perlu login kembali untuk mengakses dashboard.", confirmLabel:"Ya, Keluar", onConfirm: tenantLogout });
+}
+
+document.querySelectorAll(".toggle-eye").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.toggle);
+    const icon = btn.querySelector("i");
+    if (input.type === "password") { input.type = "text"; icon.className = "fa-solid fa-eye-slash"; }
+    else { input.type = "password"; icon.className = "fa-solid fa-eye"; }
+  });
+});
+
+/* ===== TENANT REGISTER ===== */
+document.getElementById("formTenantRegister").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button[type=submit]");
+  const name = document.getElementById("tRegName").value.trim();
+  const email = document.getElementById("tRegEmail").value.trim();
+  const password = document.getElementById("tRegPassword").value;
+  setBtnLoading(btn, true);
+  try {
+    const data = await apiCall("/tenant/register", { method: "POST", body: { name, email, password } });
+    toastSuccess("Berhasil Daftar", "Silakan simpan secret key kamu, lalu login.");
+    showFullSecretKeyOnce(data.secret_key); // BARU: kasih lihat sekali sebelum redirect
+    showView("login");
+  } catch (err) { showFieldErrors(err); } finally { setBtnLoading(btn, false); }
+});
+
+/* ===== TENANT LOGIN ===== */
+document.getElementById("formTenantLogin").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button[type=submit]");
+  const email = document.getElementById("tLoginEmail").value.trim();
+  const password = document.getElementById("tLoginPassword").value;
+  setBtnLoading(btn, true);
+  try {
+    const data = await apiCall("/tenant/login", { method:"POST", body:{ email, password } });
+    state.tenantToken = data.token;
+    localStorage.setItem("caca_tenant_token", state.tenantToken);
+    toastSuccess("Berhasil Masuk", "Selamat datang di dashboard tenant.");
+    updateNavVisibility();
+    showView("overview");
+  } catch (err) { showFieldErrors(err); } finally { setBtnLoading(btn, false); }
+});
+
+async function tenantLogout() {
+  showLoader();
+  try { await apiCall("/tenant/logout", { method:"POST", tenantAuth:true }); } catch(e) {}
+  finally {
+    clearTenantSession();
+    hideLoader();
+    toastInfo("Sampai Jumpa", "Kamu telah keluar dari dashboard.");
+    updateNavVisibility();
+    showView("login");
+  }
+}
+function clearTenantSession() {
+  state.tenantToken = null; state.tenant = null;
+  localStorage.removeItem("caca_tenant_token");
+}
+
+/* ===== OVERVIEW ===== */
+async function loadOverview() {
+  try {
+    const dash = await apiCall("/tenant/dashboard", { method: "GET", tenantAuth: true });
+    state.tenant = dash;
+    document.getElementById("overviewGreeting").textContent = `Halo, ${dash.tenant.name || "Tenant"} 👋`;
+    document.getElementById("statTotalUsers").textContent = dash.total_users ?? "-";
+    document.getElementById("statVerified").textContent = "-"; // TIDAK ADA di response, hapus atau minta backend tambahkan
+    document.getElementById("statLogins").textContent = "-"; // TIDAK ADA di sini, ambil dari /metrics/overview
+    document.getElementById("statMfaUsers").textContent = "-"; // TIDAK ADA, hapus atau tambah di backend
+    
+    const used = dash.usage.requests_used ?? 0;
+    const total = dash.usage.requests_quota ?? 0;
+    const pct = dash.usage.percentage ?? 0;
+    document.getElementById("quotaFill").style.width = pct + "%";
+    document.getElementById("quotaFill").style.background = pct > 90 ? "var(--danger)" : pct > 70 ? "var(--warn)" : "var(--accent-grad)";
+    document.getElementById("quotaUsed").textContent = `${used.toLocaleString()} dipakai`;
+    document.getElementById("quotaTotal").textContent = `dari ${total.toLocaleString()}`;
+    
+    // public_key ADA, tapi secret_key cuma preview terpotong!
+    state.publicKey = dash.api_keys.public_key;
+    state.secretKeyPreview = dash.api_keys.secret_key_preview; // BARU: bukan full key
+    state.secretKey = null; // full secret key TIDAK dikembalikan dashboard demi keamanan
+  } catch (err) {
+    toastError("Gagal Memuat", err.message);
+  }
+  
+  // Ambil metrics beneran dari /metrics/overview
+  try {
+    const metrics = await apiCall("/metrics/overview", { method: "GET", tenantAuth: true }).catch(() => null);
+    if (metrics) {
+      document.getElementById("statLogins").textContent = metrics.mau ?? "-";
+      // dau, mau, registrations_30d, login_success_rate, login_failure_rate juga tersedia
+    }
+    const methods = await apiCall("/metrics/auth-methods", { method: "GET", tenantAuth: true }).catch(() => null);
+    if (methods?.breakdown) {
+      const entries = Object.entries(methods.breakdown).map(([k, v]) => ({ method: k.replace("login_via_", ""), count: v }));
+      renderAuthMethods(entries);
+    }
+  } catch (err) {}
+}
+
+function renderAuthMethods(entries) {
+  const list = document.getElementById("authMethodsList");
+  if (!entries.length) {
+    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-chart-pie"></i><p>Belum ada data.</p></div>`;
+    return;
+  }
+  const maxCount = Math.max(...entries.map(e => e.count || 0), 1);
+  list.innerHTML = entries.map(e => `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;">
+        <span style="font-weight:600; text-transform:capitalize;">${e.method}</span>
+        <span style="color:var(--text-faint);">${e.count}</span>
+      </div>
+      <div class="quota-bar-wrap"><div class="quota-bar-fill" style="width:${(e.count/maxCount)*100}%"></div></div>
+    </div>
+  `).join("");
+}
+
+/* ===== API KEYS ===== */
+async function loadKeys() {
+  try {
+    const dash = state.tenant || await apiCall("/tenant/dashboard", { method: "GET", tenantAuth: true });
+    state.publicKey = dash.api_keys.public_key;
+    state.secretKeyPreview = dash.api_keys.secret_key_preview;
+    renderKeyDisplay("public");
+    renderSecretKeyPreview();
+  } catch (err) {
+    toastError("Gagal Memuat Key", err.message);
+  }
+}
+
+function renderSecretKeyPreview() {
+  const textEl = document.getElementById("secretKeyText");
+  const eyeBtn = document.querySelector('[onclick="toggleKeyVisibility(\'secret\')"]');
+  textEl.textContent = state.secretKeyPreview || "Tidak tersedia";
+  if (eyeBtn) eyeBtn.style.display = "none"; // tidak ada full value untuk di-toggle
+}
+
+function maskKey(key) {
+  if (!key) return "-";
+  const prefix = key.split("_")[0] + "_";
+  return prefix + "•".repeat(24);
+}
+
+function renderKeyDisplay(type) {
+  const key = type === "public" ? state.publicKey : state.secretKey;
+  const visible = type === "public" ? state.publicKeyVisible : state.secretKeyVisible;
+  const textEl = document.getElementById(type + "KeyText");
+  const eyeIcon = document.getElementById(type + "KeyEyeIcon");
+  if (!key) { textEl.textContent = "Belum tersedia"; return; }
+  textEl.textContent = visible ? key : maskKey(key);
+  eyeIcon.className = visible ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+}
+
+function toggleKeyVisibility(type) {
+  if (type === "public") state.publicKeyVisible = !state.publicKeyVisible;
+  else state.secretKeyVisible = !state.secretKeyVisible;
+  renderKeyDisplay(type);
+}
+
+function copyKey(type) {
+  if (type === "secret") {
+    toastWarn("Tidak Tersedia", "Secret key penuh hanya ditampilkan sekali saat dibuat/regenerasi. Ini cuma preview.");
+    return;
+  }
+  const key = state.publicKey;
+  if (!key) { toastWarn("Belum Ada", "Key belum dimuat."); return; }
+  navigator.clipboard.writeText(key);
+  toastInfo("Disalin", "Public key disalin ke clipboard.");
+}
+
+async function regenerateKeys() {
+  const btn = document.getElementById("btnRegenerate");
+  setBtnLoading(btn, true);
+  try {
+    const data = await apiCall("/tenant/regenerate-keys", { method:"POST", tenantAuth:true });
+    state.publicKey = data.public_key;
+    // full secret_key HANYA ada di respons ini, tampilkan sekali dengan modal khusus
+    showFullSecretKeyOnce(data.secret_key);
+    renderKeyDisplay("public");
+    loadKeys(); // refresh preview
+    toastSuccess("Key Diperbarui", "Simpan secret key baru sekarang — tidak akan ditampilkan lagi.");
+  } catch (err) {
+    toastError("Gagal Regenerasi", err.message);
+  } finally { setBtnLoading(btn, false); }
+}
+
+function showFullSecretKeyOnce(fullKey) {
+  openModal({
+    icon:"fa-triangle-exclamation",
+    title:"Secret Key Baru (Simpan Sekarang!)",
+    text: fullKey,
+    confirmLabel:"Sudah Disalin, Tutup",
+    confirmClass:"btn-primary",
+    onConfirm: () => { navigator.clipboard.writeText(fullKey); toastInfo("Disalin", "Secret key disalin."); }
+  });
+}
+
+/* ===== NEWSLETTER ===== */
+async function previewRecipients() {
+  const btn = document.getElementById("btnPreview");
+  setBtnLoading(btn, true);
+  try {
+    const onlyVerified = document.getElementById("newsletterVerifiedOnly").checked;
+    const respectPref = document.getElementById("newsletterRespectPref").checked;
+    const data = await apiCall("/tenant/newsletter/preview-recipients", {
+      method:"GET", tenantAuth:true,
+      query:{ only_verified: onlyVerified, respect_preferences: respectPref }
+    });
+    const recipients = Array.isArray(data) ? data : (data.recipients || []);
+    document.getElementById("recipientsCard").style.display = "block";
+    document.getElementById("recipientsCount").textContent = `${recipients.length} penerima`;
+    const list = document.getElementById("recipientsList");
+    if (!recipients.length) {
+      list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Tidak ada penerima dengan filter ini.</p></div>`;
+    } else {
+      list.innerHTML = recipients.map(r => {
+        const email = typeof r === "string" ? r : r.email;
+        return `
+          <div class="recipient-row">
+            <div class="recipient-avatar">${email.charAt(0).toUpperCase()}</div>
+            <div class="recipient-email">${email}</div>
+          </div>`;
+      }).join("");
+    }
+    toastSuccess("Preview Siap", `${recipients.length} pengguna akan menerima newsletter ini.`);
+  } catch (err) {
+    toastError("Gagal Memuat Preview", err.message);
+  } finally { setBtnLoading(btn, false); }
+}
+
+document.getElementById("formNewsletter").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector("button[type=submit]");
+  const subject = document.getElementById("newsletterSubject").value.trim();
+  const body = document.getElementById("newsletterBody").value.trim();
+  const only_verified = document.getElementById("newsletterVerifiedOnly").checked;
+  const respect_preferences = document.getElementById("newsletterRespectPref").checked;
+
+  openModal({
+    icon:"fa-paper-plane", title:"Kirim Newsletter?",
+    text:`Pesan "${subject}" akan dikirim ke semua penerima yang sesuai filter.`,
+    confirmLabel:"Ya, Kirim Sekarang",
+    onConfirm: async () => {
+      setBtnLoading(btn, true);
+      try {
+        await apiCall("/tenant/newsletter/send", { method:"POST", tenantAuth:true, body:{ subject, body, only_verified, respect_preferences } });
+        toastSuccess("Terkirim", "Newsletter berhasil dikirim ke semua penerima.");
+        e.target.reset();
+        document.getElementById("recipientsCard").style.display = "none";
+      } catch (err) {
+        toastError("Gagal Mengirim", err.message);
+      } finally { setBtnLoading(btn, false); }
+    }
+  });
+});
+
+/* ===== INIT ===== */
+(function init() {
+  updateNavVisibility();
+  if (state.tenantToken) showView("overview");
+  else showView("login");
+})();
+</script>
+
+</body>
 </html>
