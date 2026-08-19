@@ -3,284 +3,1139 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Caca Auth — Admin Dashboard</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg: #0b0e14;
-      --panel: #131722;
-      --border: #232838;
-      --text: #e6e9f0;
-      --muted: #8891a7;
-      --accent: #6366f1;
-      --danger: #ef4444;
-      --success: #22c55e
+      --bg-0: #05060a;
+      --bg-1: #0b0d14;
+      --bg-2: #12141d;
+      --surface: #161923;
+      --surface-2: #1c202c;
+      --border: #262b3a;
+      --border-soft: #1e222e;
+      --text: #eef0f6;
+      --text-dim: #9aa1b5;
+      --text-faint: #5c6378;
+      --accent: #7c5cff;
+      --accent-2: #00e5c7;
+      --accent-grad: linear-gradient(135deg, #7c5cff 0%, #00c2ff 50%, #00e5c7 100%);
+      --danger: #ff5c7c;
+      --warn: #ffb84d;
+      --success: #33e2a0;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow-lg: 0 20px 60px -20px rgba(0, 0, 0, 0.6);
     }
     
     * {
       box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background:
+        radial-gradient(circle at 15% -10%, rgba(124, 92, 255, 0.18), transparent 40%),
+        radial-gradient(circle at 90% 10%, rgba(0, 229, 199, 0.12), transparent 35%),
+        var(--bg-0);
       color: var(--text);
-      min-height: 100vh
-    }
-    
-    .login-screen {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
-      padding: 20px
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
     
-    .login-box {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 36px;
-      width: 100%;
-      max-width: 380px
-    }
-    
-    .login-box h1 {
-      font-size: 22px;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
-    
-    .login-box p {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 24px
-    }
-    
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      background: #0b0e14;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 14px;
-      margin-bottom: 12px
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: var(--accent)
-    }
-    
-    button {
-      width: 100%;
-      padding: 12px;
+    ::selection {
       background: var(--accent);
-      border: none;
-      border-radius: 10px;
       color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px
     }
     
-    button:hover {
-      opacity: .9
+    ::-webkit-scrollbar {
+      width: 6px;
     }
     
-    .error-msg {
-      color: var(--danger);
-      font-size: 13px;
-      margin-top: 8px
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
     }
     
-    .app {
-      display: none
-    }
-    
-    .app.active {
-      display: block
+    .app-shell {
+      max-width: 560px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
     
     .topbar {
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
       position: sticky;
       top: 0;
-      z-index: 10
+      z-index: 50;
+      background: rgba(5, 6, 10, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-soft);
     }
     
-    .topbar h1 {
-      font-size: 18px;
+    .brand {
       display: flex;
       align-items: center;
-      gap: 10px
+      gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
     }
     
-    .logout-btn {
-      width: auto;
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--border);
-      font-size: 13px
-    }
-    
-    .tabs {
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--accent-grad);
       display: flex;
-      gap: 4px;
-      padding: 12px 24px;
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: #0a0a0f;
+      font-weight: 800;
+      box-shadow: 0 6px 20px -6px rgba(124, 92, 255, 0.6);
     }
     
-    .tab {
-      padding: 8px 16px;
-      border-radius: 8px;
+    .brand-tag {
+      font-size: 10px;
+      color: var(--danger);
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      font-size: 13px;
-      color: var(--muted);
-      white-space: nowrap
+      transition: .2s;
+      font-size: 14px;
+      position: relative;
     }
     
-    .tab.active {
-      background: var(--accent);
-      color: #fff
+    .icon-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      transform: translateY(-1px);
     }
     
-    .content {
-      padding: 24px;
-      max-width: 1200px;
-      margin: 0 auto
+    .icon-btn.active {
+      color: var(--accent-2);
+      border-color: var(--accent-2);
     }
     
-    .panel {
-      display: none
+    .main {
+      flex: 1;
+      padding: 24px 20px 100px;
     }
     
-    .panel.active {
-      display: block
+    .view {
+      display: none;
+      animation: fadeUp .35s ease;
+    }
+    
+    .view.active {
+      display: block;
+    }
+    
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .view-head {
+      margin-bottom: 22px;
+    }
+    
+    .view-eyebrow {
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .view-eyebrow.danger {
+      color: var(--danger);
+    }
+    
+    .view-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    
+    .view-sub {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.5;
     }
     
     .card {
-      background: var(--panel);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg-1) 100%);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 16px
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
     }
     
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(124, 92, 255, 0.5), transparent);
     }
     
-    .stat {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px
-    }
-    
-    .stat .label {
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: .5px
-    }
-    
-    .stat .value {
-      font-size: 28px;
+    .card-title {
       font-weight: 700;
-      margin-top: 6px
+      font-size: 15px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
     }
     
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px
+    .card-title span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
-    th {
-      text-align: left;
-      color: var(--muted);
-      padding: 10px;
+    .card-title i {
+      color: var(--accent-2);
+    }
+    
+    .field {
+      margin-bottom: 16px;
+    }
+    
+    .field label {
+      display: block;
+      font-size: 12.5px;
       font-weight: 600;
-      border-bottom: 1px solid var(--border)
+      color: var(--text-dim);
+      margin-bottom: 7px;
     }
     
-    td {
-      padding: 10px;
-      border-bottom: 1px solid var(--border)
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
     }
     
-    tr:hover td {
-      background: #161b28
+    .input-wrap i.fa-icon-left {
+      position: absolute;
+      left: 14px;
+      color: var(--text-faint);
+      font-size: 14px;
+      pointer-events: none;
     }
     
-    .badge {
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600
+    input,
+    textarea,
+    select {
+      width: 100%;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 13px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14.5px;
+      font-family: inherit;
+      transition: .2s;
     }
     
-    .badge.ok {
-      background: rgba(34, 197, 94, .15);
-      color: var(--success)
+    .input-wrap input {
+      padding-left: 40px;
     }
     
-    .badge.bad {
-      background: rgba(239, 68, 68, .15);
-      color: var(--danger)
+    .input-wrap.has-toggle input {
+      padding-right: 42px;
     }
     
-    .actions button {
-      width: auto;
-      padding: 6px 12px;
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.18);
+    }
+    
+    input::placeholder {
+      color: var(--text-faint);
+    }
+    
+    .toggle-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 6px;
+    }
+    
+    .toggle-eye:hover {
+      color: var(--text);
+    }
+    
+    input.input-error {
+      border-color: var(--danger) !important;
+      box-shadow: 0 0 0 3px rgba(255, 92, 124, 0.15) !important;
+    }
+    
+    .hint {
       font-size: 12px;
-      margin-right: 6px
+      color: var(--text-faint);
+      margin-top: 6px;
+    }
+    
+    .hint.err {
+      color: var(--danger);
+    }
+    
+    .mb-0 {
+      margin-bottom: 0;
+    }
+    
+    .mt-8 {
+      margin-top: 8px;
+    }
+    
+    .mt-12 {
+      margin-top: 12px;
+    }
+    
+    .mt-16 {
+      margin-top: 16px;
+    }
+    
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary {
+      background: var(--accent-grad);
+      color: #0a0a0f;
+      box-shadow: 0 10px 30px -10px rgba(124, 92, 255, 0.6);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px -10px rgba(124, 92, 255, 0.75);
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent-2);
+    }
+    
+    .btn-ghost {
+      background: var(--surface-2);
+      color: var(--text-dim);
+    }
+    
+    .btn-ghost:hover {
+      color: var(--text);
     }
     
     .btn-danger {
-      background: var(--danger)
+      background: rgba(255, 92, 124, 0.12);
+      color: var(--danger);
+      border: 1px solid rgba(255, 92, 124, 0.3);
     }
     
-    .btn-secondary {
-      background: #2a2f42
+    .btn-danger:hover {
+      background: rgba(255, 92, 124, 0.2);
+    }
+    
+    .btn-success {
+      background: rgba(51, 226, 160, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(51, 226, 160, 0.3);
+    }
+    
+    .btn-success:hover {
+      background: rgba(51, 226, 160, 0.2);
+    }
+    
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 12px;
+      width: auto;
+    }
+    
+    .btn[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .btn .spinner {
+      display: none;
+    }
+    
+    .btn.loading .spinner {
+      display: inline-block;
+    }
+    
+    .btn.loading .btn-label {
+      opacity: .6;
+    }
+    
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.25);
+      border-top-color: #0a0a0f;
+      animation: spin .7s linear infinite;
+    }
+    
+    .btn-outline .spinner,
+    .btn-ghost .spinner {
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--text);
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-row .btn {
+      flex: 1;
+    }
+    
+    /* Stat grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    
+    .stat-box .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .stat-box .stat-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-2);
+      font-size: 13px;
+    }
+    
+    .stat-box .num {
+      font-family: 'Space Grotesk';
+      font-size: 22px;
+      font-weight: 700;
+    }
+    
+    .stat-box .lbl {
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-top: 2px;
+    }
+    
+    /* Search + filter bar */
+    .search-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .search-bar .input-wrap {
+      flex: 1;
+    }
+    
+    .filter-select {
+      width: auto;
+      min-width: 110px;
+    }
+    
+    /* User/tenant row */
+    .entity-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-1);
+      margin-bottom: 10px;
+      transition: .2s;
+    }
+    
+    .entity-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--accent-grad);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0a0a0f;
+    }
+    
+    .entity-avatar.blocked {
+      background: var(--danger);
+      opacity: .7;
+    }
+    
+    .entity-body {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .entity-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .entity-sub {
+      font-size: 11.5px;
+      color: var(--text-faint);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    
+    .entity-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    
+    .mini-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      transition: .2s;
+    }
+    
+    .mini-icon-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+    
+    .mini-icon-btn.danger:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    
+    .mini-icon-btn.success:hover {
+      color: var(--success);
+      border-color: var(--success);
+    }
+    
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    
+    .chip.verified {
+      background: rgba(51, 226, 160, 0.12);
+      color: var(--success);
+    }
+    
+    .chip.unverified {
+      background: rgba(255, 184, 77, 0.12);
+      color: var(--warn);
+    }
+    
+    .chip.blocked {
+      background: rgba(255, 92, 124, 0.12);
+      color: var(--danger);
+    }
+    
+    .chip.mfa {
+      background: rgba(0, 194, 255, 0.12);
+      color: #00c2ff;
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: .2s;
+    }
+    
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent-2);
+    }
+    
+    .page-btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+    
+    .page-info {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      font-weight: 600;
+      min-width: 70px;
+      text-align: center;
+    }
+    
+    /* IP Rule item */
+    .rule-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-1);
+      margin-bottom: 8px;
+    }
+    
+    .rule-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    
+    .rule-icon.block {
+      background: rgba(255, 92, 124, 0.12);
+      color: var(--danger);
+    }
+    
+    .rule-icon.allow {
+      background: rgba(51, 226, 160, 0.12);
+      color: var(--success);
+    }
+    
+    .rule-body {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .rule-ip {
+      font-family: monospace;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .rule-reason {
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-top: 1px;
+    }
+    
+    .rule-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 6px;
+      flex-shrink: 0;
+    }
+    
+    /* Log item */
+    .log-item {
+      display: flex;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    
+    .log-item:last-child {
+      border-bottom: none;
+    }
+    
+    .log-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--accent-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    
+    .log-body {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .log-action {
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    
+    .log-meta {
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-top: 2px;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-1);
+      padding: 5px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      white-space: nowrap;
+      border: none;
+      background: transparent;
+      color: var(--text-faint);
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+    }
+    
+    .tab-btn.active {
+      background: var(--accent-grad);
+      color: #0a0a0f;
+    }
+    
+    .tab-panel {
+      display: none;
+    }
+    
+    .tab-panel.active {
+      display: block;
+    }
+    
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 560px;
+      margin: 0 auto;
+      background: rgba(11, 13, 20, 0.85);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
+      z-index: 60;
+    }
+    
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-faint);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 6px 8px;
+      border-radius: 12px;
+      transition: .2s;
+    }
+    
+    .nav-item i {
+      font-size: 16px;
+    }
+    
+    .nav-item.active {
+      color: var(--accent-2);
+    }
+    
+    /* Toast */
+    .toast-stack {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: calc(100% - 32px);
+      max-width: 520px;
+      pointer-events: none;
     }
     
     .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--panel);
+      pointer-events: auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      padding: 14px 18px;
-      border-radius: 10px;
-      display: none;
-      z-index: 100
+      border-radius: 14px;
+      padding: 13px 14px;
+      box-shadow: var(--shadow-lg);
+      animation: toastIn .35s cubic-bezier(.2, .9, .3, 1.3);
+      backdrop-filter: blur(10px);
     }
     
-    @media(max-width:640px) {
-      .content {
-        padding: 14px
+    .toast.hide {
+      animation: toastOut .3s ease forwards;
+    }
+    
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(-16px) scale(.95);
       }
       
-      .topbar {
-        padding: 14px
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateY(-10px) scale(.95);
+      }
+    }
+    
+    .toast-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    
+    .toast.success .toast-icon {
+      background: rgba(51, 226, 160, 0.15);
+      color: var(--success);
+    }
+    
+    .toast.error .toast-icon {
+      background: rgba(255, 92, 124, 0.15);
+      color: var(--danger);
+    }
+    
+    .toast.warn .toast-icon {
+      background: rgba(255, 184, 77, 0.15);
+      color: var(--warn);
+    }
+    
+    .toast.info .toast-icon {
+      background: rgba(0, 194, 255, 0.15);
+      color: #00c2ff;
+    }
+    
+    .toast-content {
+      flex: 1;
+    }
+    
+    .toast-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    
+    .toast-msg {
+      font-size: 12.5px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    
+    .toast-close {
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 10, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 200;
+    }
+    
+    .modal-overlay.show {
+      display: flex;
+      animation: fadeIn .2s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .modal-sheet {
+      width: 100%;
+      max-width: 560px;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 22px 22px 0 0;
+      padding: 22px 20px calc(22px + env(safe-area-inset-bottom));
+      animation: sheetUp .3s cubic-bezier(.2, .9, .3, 1.1);
+    }
+    
+    @keyframes sheetUp {
+      from {
+        transform: translateY(100%);
+      }
+      
+      to {
+        transform: translateY(0);
+      }
+    }
+    
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      margin: 0 auto 18px;
+    }
+    
+    .modal-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: rgba(255, 92, 124, 0.12);
+      color: var(--danger);
+    }
+    
+    .modal-title {
+      text-align: center;
+      font-weight: 700;
+      font-size: 17px;
+      margin-bottom: 6px;
+    }
+    
+    .modal-text {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 10, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+    }
+    
+    .page-loader.show {
+      display: flex;
+    }
+    
+    .page-loader .ring {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid rgba(124, 92, 255, 0.2);
+      border-top-color: var(--accent);
+      animation: spin .8s linear infinite;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-faint);
+    }
+    
+    .empty-state i {
+      font-size: 34px;
+      margin-bottom: 12px;
+      opacity: .5;
+    }
+    
+    .empty-state p {
+      font-size: 13px;
+    }
+    
+    .small-note {
+      font-size: 12px;
+      color: var(--text-faint);
+      line-height: 1.5;
+    }
+    
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 12px;
+      height: 66px;
+      margin-bottom: 10px;
+    }
+    
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+      
+      100% {
+        background-position: -200% 0;
       }
     }
   </style>
@@ -288,260 +1143,726 @@
 
 <body>
   
-  <div class="login-screen" id="loginScreen">
-    <div class="login-box">
-      <h1><i class="fa-solid fa-shield-halved"></i> Caca Auth Admin</h1>
-      <p>Masuk untuk mengelola sistem autentikasi</p>
-      <input type="email" id="adminEmail" placeholder="Email admin">
-      <input type="password" id="adminPassword" placeholder="Password">
-      <button onclick="adminLogin()">Masuk</button>
-      <div class="error-msg" id="loginError"></div>
-    </div>
-  </div>
-  
-  <div class="app" id="app">
+  <div class="app-shell">
+    
     <div class="topbar">
-      <h1><i class="fa-solid fa-shield-halved"></i> Caca Auth Admin</h1>
-      <button class="logout-btn" onclick="adminLogout()"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+      <div class="brand">
+        <div class="brand-mark"><i class="fa-solid fa-user-shield"></i></div>
+        <div>
+          <div>Caca Auth</div>
+          <div class="brand-tag">Admin Console</div>
+        </div>
+      </div>
+      <div class="topbar-actions" id="topbarActions"></div>
     </div>
-    <div class="tabs">
-      <div class="tab active" data-tab="overview" onclick="switchTab('overview')"><i class="fa-solid fa-chart-line"></i> Overview</div>
-      <div class="tab" data-tab="users" onclick="switchTab('users')"><i class="fa-solid fa-users"></i> Users</div>
-      <div class="tab" data-tab="tenants" onclick="switchTab('tenants')"><i class="fa-solid fa-building"></i> Tenants</div>
-      <div class="tab" data-tab="ip" onclick="switchTab('ip')"><i class="fa-solid fa-network-wired"></i> IP Rules</div>
-      <div class="tab" data-tab="logs" onclick="switchTab('logs')"><i class="fa-solid fa-file-lines"></i> Logs</div>
+    
+    <div class="main">
+      
+      <!-- ===== LOGIN ===== -->
+      <section class="view active" id="view-login">
+        <div class="view-head">
+          <div class="view-eyebrow danger"><i class="fa-solid fa-lock"></i> Restricted Access</div>
+          <div class="view-title">Admin Login</div>
+          <div class="view-sub">Akses khusus administrator sistem.</div>
+        </div>
+        <div class="card">
+          <form id="formAdminLogin">
+            <div class="field">
+              <label>Email Admin</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-user-shield fa-icon-left"></i>
+                <input type="email" id="aLoginEmail" placeholder="admin@caca.dev" required>
+              </div>
+            </div>
+            <div class="field mb-0">
+              <label>Password</label>
+              <div class="input-wrap has-toggle">
+                <i class="fa-solid fa-lock fa-icon-left"></i>
+                <input type="password" id="aLoginPassword" placeholder="••••••••" required>
+                <button type="button" class="toggle-eye" data-toggle="aLoginPassword"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-16">
+              <span class="spinner"></span>
+              <i class="fa-solid fa-right-to-bracket btn-label"></i>
+              <span class="btn-label">Masuk sebagai Admin</span>
+            </button>
+          </form>
+        </div>
+        <p class="small-note text-center">Halaman ini hanya untuk administrator resmi. Aktivitas dicatat dalam audit log.</p>
+      </section>
+      
+      <!-- ===== OVERVIEW ===== -->
+      <section class="view" id="view-overview">
+        <div class="view-head">
+          <div class="view-eyebrow"><i class="fa-solid fa-gauge-high"></i> Control Center</div>
+          <div class="view-title">Admin Overview</div>
+          <div class="view-sub">Pantau seluruh tenant dan pengguna dalam sistem.</div>
+        </div>
+        
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-building"></i></div>
+            </div>
+            <div class="num" id="statTenants">-</div>
+            <div class="lbl">Total Tenant</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div class="num" id="statUsersAll">-</div>
+            <div class="lbl">Total Pengguna</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-ban"></i></div>
+            </div>
+            <div class="num" id="statBlocked">-</div>
+            <div class="lbl">Diblokir</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-top">
+              <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            </div>
+            <div class="num" id="statIpRules">-</div>
+            <div class="lbl">Aturan IP</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title"><span><i class="fa-solid fa-bolt"></i> Navigasi Cepat</span></div>
+          <div class="entity-row" onclick="showView('users')" style="cursor:pointer;">
+            <div class="entity-avatar"><i class="fa-solid fa-users"></i></div>
+            <div class="entity-body">
+              <div class="entity-title">Kelola Pengguna</div>
+              <div class="entity-sub">Block, unblock, reset MFA</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-faint);"></i>
+          </div>
+          <div class="entity-row" onclick="showView('tenants')" style="cursor:pointer;">
+            <div class="entity-avatar"><i class="fa-solid fa-building"></i></div>
+            <div class="entity-body">
+              <div class="entity-title">Kelola Tenant</div>
+              <div class="entity-sub">Lihat semua tenant terdaftar</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-faint);"></i>
+          </div>
+          <div class="entity-row" onclick="showView('security')" style="cursor:pointer;">
+            <div class="entity-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="entity-body">
+              <div class="entity-title">Aturan IP</div>
+              <div class="entity-sub">Whitelist & blacklist alamat IP</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-faint);"></i>
+          </div>
+          <div class="entity-row" onclick="showView('logs')" style="cursor:pointer; margin-bottom:0;">
+            <div class="entity-avatar"><i class="fa-solid fa-file-lines"></i></div>
+            <div class="entity-body">
+              <div class="entity-title">Audit Log</div>
+              <div class="entity-sub">Riwayat aktivitas sistem</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-faint);"></i>
+          </div>
+        </div>
+      </section>
+      
+      <!-- ===== USERS ===== -->
+      <section class="view" id="view-users">
+        <div class="view-head">
+          <div class="view-eyebrow"><i class="fa-solid fa-users"></i> Manajemen</div>
+          <div class="view-title">Pengguna</div>
+          <div class="view-sub">Kelola seluruh pengguna lintas tenant.</div>
+        </div>
+        
+        <div class="card">
+          <div class="search-bar">
+            <div class="input-wrap">
+              <i class="fa-solid fa-magnifying-glass fa-icon-left"></i>
+              <input type="text" id="userTenantFilter" placeholder="Filter Tenant ID (opsional)">
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="loadUsers(1)"><i class="fa-solid fa-filter"></i></button>
+          </div>
+          
+          <div id="usersList">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+          
+          <div class="pagination" id="usersPagination"></div>
+        </div>
+      </section>
+      
+      <!-- ===== TENANTS ===== -->
+      <section class="view" id="view-tenants">
+        <div class="view-head">
+          <div class="view-eyebrow"><i class="fa-solid fa-building"></i> Manajemen</div>
+          <div class="view-title">Tenant</div>
+          <div class="view-sub">Semua tenant yang terdaftar di sistem.</div>
+        </div>
+        <div class="card">
+          <div id="tenantsList">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- ===== SECURITY / IP RULES ===== -->
+      <section class="view" id="view-security">
+        <div class="view-head">
+          <div class="view-eyebrow"><i class="fa-solid fa-shield-halved"></i> Keamanan</div>
+          <div class="view-title">Aturan IP</div>
+          <div class="view-sub">Kelola whitelist dan blacklist alamat IP.</div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-plus"></i> Tambah Aturan Baru</div>
+          <form id="formIpRule">
+            <div class="field">
+              <label>Tenant ID</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-building fa-icon-left"></i>
+                <input type="text" id="ipRuleTenantId" placeholder="UUID tenant" required>
+              </div>
+            </div>
+            <div class="field">
+              <label>Alamat IP</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-network-wired fa-icon-left"></i>
+                <input type="text" id="ipRuleAddress" placeholder="192.168.1.1" required>
+              </div>
+            </div>
+            <div class="field">
+              <label>Jenis Aturan</label>
+              <select id="ipRuleType">
+                <option value="block">Block (Blokir)</option>
+                <option value="allow">Allow (Izinkan)</option>
+              </select>
+            </div>
+            <div class="field mb-0">
+              <label>Alasan (opsional)</label>
+              <div class="input-wrap">
+                <i class="fa-solid fa-comment fa-icon-left"></i>
+                <input type="text" id="ipRuleReason" placeholder="Aktivitas mencurigakan">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-16">
+              <span class="spinner"></span>
+              <i class="fa-solid fa-plus btn-label"></i>
+              <span class="btn-label">Tambah Aturan</span>
+            </button>
+          </form>
+        </div>
+        
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-list"></i> Aturan Aktif</div>
+          <div id="ipRulesList">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- ===== LOGS ===== -->
+      <section class="view" id="view-logs">
+        <div class="view-head">
+          <div class="view-eyebrow"><i class="fa-solid fa-file-lines"></i> Audit</div>
+          <div class="view-title">Log Aktivitas</div>
+          <div class="view-sub">Riwayat aksi penting dalam sistem.</div>
+        </div>
+        
+        <div class="card">
+          <div class="search-bar">
+            <div class="input-wrap">
+              <i class="fa-solid fa-user fa-icon-left"></i>
+              <input type="text" id="logUserFilter" placeholder="Filter User ID (opsional)">
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="loadLogs()"><i class="fa-solid fa-filter"></i></button>
+          </div>
+          <div id="logsList">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+          </div>
+        </div>
+      </section>
+      
     </div>
-    <div class="content">
-      <div class="panel active" id="panel-overview">
-        <div class="grid" id="statsGrid"></div>
-        <div class="card">
-          <p style="color:var(--muted);font-size:13px">Data metrics diambil per-tenant. Untuk melihat metrics tenant tertentu, gunakan tab Tenants lalu masukkan API key tenant terkait di kolom filter Users.</p>
-        </div>
-      </div>
-      <div class="panel" id="panel-users">
-        <div class="card">
-          <input type="text" id="tenantFilter" placeholder="Filter berdasarkan Tenant ID (opsional)" style="margin-bottom:14px">
-          <button onclick="loadUsers()" style="width:auto;padding:8px 16px">Refresh</button>
-        </div>
-        <div class="card">
-          <table>
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Verified</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="usersTable"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="panel" id="panel-tenants">
-        <div class="card">
-          <table>
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>Email</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="tenantsTable"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="panel" id="panel-ip">
-        <div class="card">
-          <input type="text" id="newIpTenant" placeholder="Tenant ID">
-          <input type="text" id="newIpAddress" placeholder="IP Address">
-          <select id="newIpType" style="width:100%;padding:12px;background:#0b0e14;border:1px solid var(--border);border-radius:10px;color:var(--text);margin-bottom:12px">
-            <option value="blacklist">Blacklist</option>
-            <option value="whitelist">Whitelist</option>
-          </select>
-          <button onclick="createIpRule()" style="width:auto;padding:8px 16px">Tambah Rule</button>
-        </div>
-        <div class="card">
-          <table>
-            <thead>
-              <tr>
-                <th>IP</th>
-                <th>Tipe</th>
-                <th>Alasan</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="ipTable"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="panel" id="panel-logs">
-        <div class="card">
-          <table>
-            <thead>
-              <tr>
-                <th>Aksi</th>
-                <th>User ID</th>
-                <th>IP</th>
-                <th>Waktu</th>
-              </tr>
-            </thead>
-            <tbody id="logsTable"></tbody>
-          </table>
-        </div>
+    
+    <div class="bottom-nav" id="bottomNav" style="display:none;">
+      <button class="nav-item active" data-nav="overview" onclick="showView('overview')"><i class="fa-solid fa-gauge-high"></i>Overview</button>
+      <button class="nav-item" data-nav="users" onclick="showView('users')"><i class="fa-solid fa-users"></i>Users</button>
+      <button class="nav-item" data-nav="tenants" onclick="showView('tenants')"><i class="fa-solid fa-building"></i>Tenants</button>
+      <button class="nav-item" data-nav="security" onclick="showView('security')"><i class="fa-solid fa-shield-halved"></i>Security</button>
+      <button class="nav-item" data-nav="logs" onclick="showView('logs')"><i class="fa-solid fa-file-lines"></i>Logs</button>
+    </div>
+    
+  </div>
+  
+  <div class="toast-stack" id="toastStack"></div>
+  
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-icon" id="modalIcon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div class="modal-title" id="modalTitle">Konfirmasi</div>
+      <div class="modal-text" id="modalText">Apakah kamu yakin?</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="closeModal()">Batal</button>
+        <button class="btn btn-danger" id="modalConfirmBtn">Ya, Lanjutkan</button>
       </div>
     </div>
   </div>
   
-  <div class="toast" id="toast"></div>
+  <div class="page-loader" id="pageLoader">
+    <div class="ring"></div>
+  </div>
   
   <script>
-    const API_BASE = window.location.origin;
-    let adminToken = localStorage.getItem('caca_admin_token');
+    const BASE = "https://caca-authentication.vercel.app";
     
-    if (adminToken) showApp();
+    let state = {
+      adminToken: localStorage.getItem("caca_admin_token") || null,
+      usersPage: 1,
+      usersLimit: 20,
+      usersTotal: 0
+    };
     
-    async function adminLogin() {
-      const email = document.getElementById('adminEmail').value;
-      const password = document.getElementById('adminPassword').value;
-      const errEl = document.getElementById('loginError');
-      errEl.textContent = '';
-      try {
-        const res = await fetch(`${API_BASE}/admin/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
-        const json = await res.json();
-        if (!json.success) { errEl.textContent = json.error.message; return; }
-        adminToken = json.data.token;
-        localStorage.setItem('caca_admin_token', adminToken);
-        showApp();
-      } catch (e) { errEl.textContent = 'Gagal terhubung ke server'; }
+    async function apiCall(path, { method = "GET", body, adminAuth = false, query } = {}) {
+      const headers = { "Content-Type": "application/json" };
+      if (adminAuth) {
+        if (!state.adminToken) throw { message: "Sesi admin tidak ditemukan, silakan login ulang." };
+        headers["Authorization"] = "Bearer " + state.adminToken;
+      }
+      let url = BASE + path;
+      if (query) url += "?" + new URLSearchParams(query).toString();
+      
+      const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined });
+      let json = null;
+      try { json = await res.json(); } catch (e) {}
+      
+      if (!res.ok) {
+        if (res.status === 401 && adminAuth) {
+          clearAdminSession();
+          updateNavVisibility();
+          showView("login");
+          toastWarn("Sesi Berakhir", "Silakan login kembali.");
+        }
+        throw buildApiError(res.status, json);
+      }
+      return json && json.success !== undefined ? json.data : json;
     }
+    
+    function buildApiError(status, json) {
+      if (status === 422 && json?.detail && Array.isArray(json.detail)) {
+        const fields = json.detail.map(d => ({ field: d.loc ? d.loc[d.loc.length - 1] : "unknown", msg: d.msg }));
+        return { status, data: json, message: fields.map(f => `${f.field}: ${f.msg}`).join(", "), fields };
+      }
+      if (json?.error?.message) {
+        return { status, data: json, message: json.error.message, code: json.error.code };
+      }
+      const msg = (json && (json.detail || json.message)) || `Terjadi kesalahan (${status})`;
+      return { status, data: json, message: typeof msg === "string" ? msg : JSON.stringify(msg) };
+    }
+    
+    /* ===== TOAST ===== */
+    function toast(type, title, msg, duration = 4000) {
+      const stack = document.getElementById("toastStack");
+      const icons = { success: "fa-circle-check", error: "fa-circle-xmark", warn: "fa-triangle-exclamation", info: "fa-circle-info" };
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.innerHTML = `
+    <div class="toast-icon"><i class="fa-solid ${icons[type]}"></i></div>
+    <div class="toast-content"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>
+    <button class="toast-close"><i class="fa-solid fa-xmark"></i></button>`;
+      stack.appendChild(el);
+      const remove = () => {
+        el.classList.add("hide");
+        setTimeout(() => el.remove(), 280);
+      };
+      el.querySelector(".toast-close").onclick = remove;
+      setTimeout(remove, duration);
+    }
+    const toastSuccess = (t, m) => toast("success", t, m);
+    const toastError = (t, m) => toast("error", t, m);
+    const toastWarn = (t, m) => toast("warn", t, m);
+    const toastInfo = (t, m) => toast("info", t, m);
+    
+    function showFieldErrors(err) {
+      document.querySelectorAll(".field-error").forEach(el => el.remove());
+      document.querySelectorAll("input.input-error").forEach(el => el.classList.remove("input-error"));
+      if (err.fields && err.fields.length) {
+        err.fields.forEach(f => {
+          const input = document.querySelector(`[id*="${f.field}" i]`);
+          if (input) {
+            input.classList.add("input-error");
+            const errEl = document.createElement("div");
+            errEl.className = "hint err field-error";
+            errEl.textContent = f.msg;
+            input.closest(".field")?.appendChild(errEl);
+          }
+        });
+        toastError("Periksa Input", "Beberapa field belum sesuai.");
+      } else {
+        toastError("Gagal", err.message);
+      }
+    }
+    
+    /* ===== MODAL ===== */
+    let modalConfirmCallback = null;
+    
+    function openModal({ icon = "fa-triangle-exclamation", title, text, confirmLabel = "Ya, Lanjutkan", confirmClass = "btn-danger", onConfirm }) {
+      document.getElementById("modalIcon").innerHTML = `<i class="fa-solid ${icon}"></i>`;
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalText").textContent = text;
+      const btn = document.getElementById("modalConfirmBtn");
+      btn.textContent = confirmLabel;
+      btn.className = "btn " + confirmClass;
+      modalConfirmCallback = onConfirm;
+      document.getElementById("modalOverlay").classList.add("show");
+    }
+    
+    function closeModal() { document.getElementById("modalOverlay").classList.remove("show"); }
+    document.getElementById("modalConfirmBtn").addEventListener("click", () => {
+      if (modalConfirmCallback) modalConfirmCallback();
+      closeModal();
+    });
+    
+    function showLoader() { document.getElementById("pageLoader").classList.add("show"); }
+    
+    function hideLoader() { document.getElementById("pageLoader").classList.remove("show"); }
+    
+    function setBtnLoading(btn, loading) {
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.classList.toggle("loading", loading);
+    }
+    
+    /* ===== ROUTER ===== */
+    function showView(name) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.getElementById("view-" + name)?.classList.add("active");
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.nav === name));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      
+      if (name === "overview") loadOverview();
+      if (name === "users") loadUsers(1);
+      if (name === "tenants") loadTenants();
+      if (name === "security") loadIpRules();
+      if (name === "logs") loadLogs();
+    }
+    
+    function updateNavVisibility() {
+      const loggedIn = !!state.adminToken;
+      document.getElementById("bottomNav").style.display = loggedIn ? "flex" : "none";
+      const el = document.getElementById("topbarActions");
+      el.innerHTML = loggedIn ? `<button class="icon-btn" onclick="confirmAdminLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>` : "";
+    }
+    
+    function confirmAdminLogout() {
+      openModal({ icon: "fa-right-from-bracket", title: "Keluar dari Admin Console?", text: "Kamu perlu login kembali untuk mengakses panel ini.", confirmLabel: "Ya, Keluar", onConfirm: adminLogout });
+    }
+    
+    document.querySelectorAll(".toggle-eye").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const input = document.getElementById(btn.dataset.toggle);
+        const icon = btn.querySelector("i");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.className = "fa-solid fa-eye-slash";
+        }
+        else {
+          input.type = "password";
+          icon.className = "fa-solid fa-eye";
+        }
+      });
+    });
+    
+    /* ===== ADMIN LOGIN / LOGOUT ===== */
+    document.getElementById("formAdminLogin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector("button[type=submit]");
+      const email = document.getElementById("aLoginEmail").value.trim();
+      const password = document.getElementById("aLoginPassword").value;
+      setBtnLoading(btn, true);
+      try {
+        const data = await apiCall("/admin/login", { method: "POST", body: { email, password } });
+        state.adminToken = data.token; // sebelumnya: data.access_token || data.token
+        localStorage.setItem("caca_admin_token", state.adminToken);
+        toastSuccess("Berhasil Masuk", "Selamat datang di Admin Console.");
+        updateNavVisibility();
+        showView("overview");
+      } catch (err) { showFieldErrors(err); } finally { setBtnLoading(btn, false); }
+    });
     
     async function adminLogout() {
-      await apiCall('/admin/logout', { method: 'POST' });
-      localStorage.removeItem('caca_admin_token');
-      location.reload();
-    }
-    
-    function showApp() {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').classList.add('active');
-      loadOverview();
-      loadUsers();
-      loadTenants();
-      loadIpRules();
-      loadLogs();
-    }
-    
-    function switchTab(name) {
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
-    }
-    
-    async function apiCall(path, options = {}) {
-      const res = await fetch(`${API_BASE}${path}`, { ...options, headers: { ...options.headers, 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' } });
-      if (res.status === 401) {
-        localStorage.removeItem('caca_admin_token');
-        location.reload();
-        return { success: false };
+      showLoader();
+      try { await apiCall("/admin/logout", { method: "POST", adminAuth: true }); } catch (e) {}
+      finally {
+        clearAdminSession();
+        hideLoader();
+        toastInfo("Sampai Jumpa", "Kamu telah keluar dari Admin Console.");
+        updateNavVisibility();
+        showView("login");
       }
-      return res.json();
     }
     
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 2500);
+    function clearAdminSession() {
+      state.adminToken = null;
+      localStorage.removeItem("caca_admin_token");
     }
     
+    /* ===== OVERVIEW ===== */
     async function loadOverview() {
-      const grid = document.getElementById('statsGrid');
-      grid.innerHTML = `
-    <div class="stat"><div class="label">Total Tenants</div><div class="value" id="statTenants">-</div></div>
-    <div class="stat"><div class="label">Total Users</div><div class="value" id="statUsers">-</div></div>
-    <div class="stat"><div class="label">IP Rules Aktif</div><div class="value" id="statIpRules">-</div></div>
-  `;
-      const tenants = await apiCall('/admin/tenants');
-      const rules = await apiCall('/admin/ip-rules');
-      document.getElementById('statTenants').textContent = tenants.data?.tenants?.length ?? 0;
-      document.getElementById('statIpRules').textContent = rules.data?.rules?.length ?? 0;
-    }
-    
-    async function loadUsers() {
-      const tenantId = document.getElementById('tenantFilter')?.value || '';
-      const query = tenantId ? `?tenant_id=${tenantId}` : '';
-      const json = await apiCall(`/admin/users${query}`);
-      const tbody = document.getElementById('usersTable');
-      tbody.innerHTML = '';
-      (json.data?.users || []).forEach(u => {
-        tbody.innerHTML += `<tr>
-      <td>${u.email}</td>
-      <td><span class="badge ${u.is_active?'ok':'bad'}">${u.is_active?'Aktif':'Diblokir'}</span></td>
-      <td><span class="badge ${u.is_email_verified?'ok':'bad'}">${u.is_email_verified?'Ya':'Belum'}</span></td>
-      <td class="actions">
-        <button class="btn-secondary" onclick="userAction('${u.id}','${u.is_active?'block':'unblock'}')">${u.is_active?'Block':'Unblock'}</button>
-        <button class="btn-danger" onclick="userAction('${u.id}','reset-mfa')">Reset MFA</button>
-      </td>
-    </tr>`;
-      });
-      document.getElementById('statUsers').textContent = json.data?.users?.length ?? 0;
-    }
-    
-    async function userAction(userId, action) {
-      const json = await apiCall(`/admin/users/${userId}/${action}`, { method: 'POST' });
-      if (json.success) {
-        showToast('Berhasil diperbarui');
-        loadUsers();
+      try {
+        const tenantsData = await apiCall("/admin/tenants", { method: "GET", adminAuth: true }).catch(() => ({ tenants: [] }));
+        const tenantList = tenantsData.tenants || [];
+        document.getElementById("statTenants").textContent = tenantList.length;
+        
+        // Tidak ada total user count langsung — ambil 1 halaman besar sebagai estimasi kasar, atau kosongkan
+        const usersData = await apiCall("/admin/users", { method: "GET", adminAuth: true, query: { page: 1, limit: 100 } }).catch(() => ({ users: [] }));
+        const userList = usersData.users || [];
+        document.getElementById("statUsersAll").textContent = userList.length >= 100 ? "100+" : userList.length;
+        
+        const blockedCount = userList.filter(u => !u.is_active).length;
+        document.getElementById("statBlocked").textContent = userList.length >= 100 ? "-" : blockedCount;
+        
+        const ipRulesData = await apiCall("/admin/ip-rules", { method: "GET", adminAuth: true }).catch(() => ({ rules: [] }));
+        document.getElementById("statIpRules").textContent = (ipRulesData.rules || []).length;
+      } catch (err) {
+        toastError("Gagal Memuat Overview", err.message);
       }
     }
     
-    async function loadTenants() {
-      const json = await apiCall('/admin/tenants');
-      const tbody = document.getElementById('tenantsTable');
-      tbody.innerHTML = '';
-      (json.data?.tenants || []).forEach(t => {
-        tbody.innerHTML += `<tr><td>${t.name}</td><td>${t.email}</td><td><span class="badge ${t.is_active?'ok':'bad'}">${t.is_active?'Aktif':'Nonaktif'}</span></td></tr>`;
+    /* ===== USERS ===== */
+    async function loadUsers(page = 1) {
+      state.usersPage = page;
+      const container = document.getElementById("usersList");
+      container.innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
+      try {
+        const tenantId = document.getElementById("userTenantFilter").value.trim();
+        const query = { page, limit: state.usersLimit };
+        if (tenantId) query.tenant_id = tenantId;
+        
+        const data = await apiCall("/admin/users", { method: "GET", adminAuth: true, query });
+        const users = data.users || [];
+        
+        if (!users.length) {
+          container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Tidak ada pengguna ditemukan.</p></div>`;
+        } else {
+          container.innerHTML = users.map(u => renderUserRow(u)).join("");
+        }
+        // BARU: pagination "buta" — tidak tahu total halaman, cuma next/prev berdasar apakah hasil penuh
+        renderUsersPagination(users.length);
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Gagal memuat pengguna.</p></div>`;
+        toastError("Gagal Memuat", err.message);
+      }
+    }
+    
+    function renderUsersPagination(resultCount) {
+      const el = document.getElementById("usersPagination");
+      const hasNext = resultCount === state.usersLimit; // asumsi: kalau hasil penuh, kemungkinan ada halaman berikutnya
+      el.innerHTML = `
+    <button class="page-btn" ${state.usersPage <= 1 ? 'disabled' : ''} onclick="loadUsers(${state.usersPage - 1})"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="page-info">Hal ${state.usersPage}</div>
+    <button class="page-btn" ${!hasNext ? 'disabled' : ''} onclick="loadUsers(${state.usersPage + 1})"><i class="fa-solid fa-chevron-right"></i></button>
+  `;
+    }
+    
+    function renderUserRow(u) {
+      const initial = (u.email || "?").charAt(0).toUpperCase();
+      const isBlocked = !u.is_active; // BARU: is_active false = blocked
+      return `
+    <div class="entity-row">
+      <div class="entity-avatar ${isBlocked ? 'blocked' : ''}">${initial}</div>
+      <div class="entity-body">
+        <div class="entity-title">${u.email}</div>
+        <div class="entity-sub">
+          ${u.is_email_verified ? '<span class="chip verified"><i class="fa-solid fa-check"></i> Verified</span>' : '<span class="chip unverified"><i class="fa-solid fa-triangle-exclamation"></i> Unverified</span>'}
+          ${isBlocked ? '<span class="chip blocked"><i class="fa-solid fa-ban"></i> Blocked</span>' : ''}
+        </div>
+      </div>
+      <div class="entity-actions">
+        ${isBlocked
+          ? `<button class="mini-icon-btn success" title="Unblock" onclick="userAction('${u.id}','unblock')"><i class="fa-solid fa-check"></i></button>`
+          : `<button class="mini-icon-btn danger" title="Block" onclick="userAction('${u.id}','block')"><i class="fa-solid fa-ban"></i></button>`
+        }
+        <button class="mini-icon-btn" title="Reset MFA" onclick="userAction('${u.id}','reset-mfa')"><i class="fa-solid fa-rotate"></i></button>
+      </div>
+    </div>`;
+    }
+    
+    function userAction(userId, action) {
+      const labels = {
+        block: { icon: "fa-ban", title: "Blokir Pengguna?", text: "Pengguna ini tidak akan bisa login sampai di-unblock.", confirmLabel: "Ya, Blokir", confirmClass: "btn-danger" },
+        unblock: { icon: "fa-check", title: "Buka Blokir Pengguna?", text: "Pengguna ini akan bisa login kembali.", confirmLabel: "Ya, Buka Blokir", confirmClass: "btn-success" },
+        "reset-mfa": { icon: "fa-rotate", title: "Reset MFA Pengguna?", text: "Pengguna harus setup ulang autentikasi dua faktor.", confirmLabel: "Ya, Reset", confirmClass: "btn-danger" }
+      };
+      const cfg = labels[action];
+      openModal({
+        ...cfg,
+        onConfirm: async () => {
+          showLoader();
+          try {
+            await apiCall(`/admin/users/${userId}/${action}`, { method: "POST", adminAuth: true });
+            toastSuccess("Berhasil", `Aksi "${action}" berhasil dijalankan.`);
+            loadUsers(state.usersPage);
+          } catch (err) {
+            toastError("Gagal", err.message);
+          } finally { hideLoader(); }
+        }
       });
     }
+    
+    /* ===== TENANTS ===== */
+    async function loadTenants() {
+      const container = document.getElementById("tenantsList");
+      container.innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
+      try {
+        const data = await apiCall("/admin/tenants", { method: "GET", adminAuth: true });
+        const tenants = data.tenants || [];
+        if (!tenants.length) {
+          container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-building"></i><p>Belum ada tenant terdaftar.</p></div>`;
+          return;
+        }
+        container.innerHTML = tenants.map(t => `
+      <div class="entity-row" style="cursor:default;">
+        <div class="entity-avatar">${(t.name || "?").charAt(0).toUpperCase()}</div>
+        <div class="entity-body">
+          <div class="entity-title">${t.name}</div>
+          <div class="entity-sub">
+            <span>${t.email || ""}</span>
+            ${t.is_active === false ? '<span class="chip blocked"><i class="fa-solid fa-pause"></i> Nonaktif</span>' : '<span class="chip verified"><i class="fa-solid fa-check"></i> Aktif</span>'}
+          </div>
+        </div>
+      </div>
+    `).join("");
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Gagal memuat tenant.</p></div>`;
+        toastError("Gagal Memuat", err.message);
+      }
+    }
+    
+    /* ===== IP RULES ===== */
+    document.getElementById("formIpRule").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector("button[type=submit]");
+      const tenant_id = document.getElementById("ipRuleTenantId").value.trim();
+      const ip_address = document.getElementById("ipRuleAddress").value.trim();
+      const rule_type = document.getElementById("ipRuleType").value;
+      const reason = document.getElementById("ipRuleReason").value.trim();
+      setBtnLoading(btn, true);
+      try {
+        await apiCall("/admin/ip-rules", { method: "POST", adminAuth: true, body: { tenant_id, ip_address, rule_type, reason: reason || null } });
+        toastSuccess("Berhasil", "Aturan IP baru telah ditambahkan.");
+        e.target.reset();
+        loadIpRules();
+      } catch (err) {
+        showFieldErrors(err);
+      } finally { setBtnLoading(btn, false); }
+    });
     
     async function loadIpRules() {
-      const json = await apiCall('/admin/ip-rules');
-      const tbody = document.getElementById('ipTable');
-      tbody.innerHTML = '';
-      (json.data?.rules || []).forEach(r => {
-        tbody.innerHTML += `<tr><td>${r.ip_address}</td><td><span class="badge ${r.rule_type==='blacklist'?'bad':'ok'}">${r.rule_type}</span></td><td>${r.reason||'-'}</td>
-      <td class="actions"><button class="btn-danger" onclick="deleteIpRule('${r.id}')">Hapus</button></td></tr>`;
+      const container = document.getElementById("ipRulesList");
+      container.innerHTML = `<div class="skeleton"></div><div class="skeleton"></div>`;
+      try {
+        const data = await apiCall("/admin/ip-rules", { method: "GET", adminAuth: true });
+        const rules = data.rules || [];
+        if (!rules.length) {
+          container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-shield-halved"></i><p>Belum ada aturan IP.</p></div>`;
+          return;
+        }
+        container.innerHTML = rules.map(r => `
+      <div class="rule-item">
+        <div class="rule-icon ${r.rule_type === 'block' ? 'block' : 'allow'}">
+          <i class="fa-solid ${r.rule_type === 'block' ? 'fa-ban' : 'fa-check'}"></i>
+        </div>
+        <div class="rule-body">
+          <div class="rule-ip">${r.ip_address}</div>
+          <div class="rule-reason">${r.reason || 'Tanpa alasan'}</div>
+        </div>
+        <button class="rule-delete" onclick="deleteIpRule('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    `).join("");
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Gagal memuat aturan IP.</p></div>`;
+        toastError("Gagal Memuat", err.message);
+      }
+    }
+    
+    function deleteIpRule(ruleId) {
+      openModal({
+        icon: "fa-trash",
+        title: "Hapus Aturan IP?",
+        text: "Aturan ini akan langsung dinonaktifkan.",
+        confirmLabel: "Ya, Hapus",
+        onConfirm: async () => {
+          showLoader();
+          try {
+            await apiCall(`/admin/ip-rules/${ruleId}`, { method: "DELETE", adminAuth: true });
+            toastSuccess("Terhapus", "Aturan IP telah dihapus.");
+            loadIpRules();
+          } catch (err) {
+            toastError("Gagal Menghapus", err.message);
+          } finally { hideLoader(); }
+        }
       });
     }
     
-    async function createIpRule() {
-      const tenant_id = document.getElementById('newIpTenant').value;
-      const ip_address = document.getElementById('newIpAddress').value;
-      const rule_type = document.getElementById('newIpType').value;
-      const json = await apiCall('/admin/ip-rules', { method: 'POST', body: JSON.stringify({ tenant_id, ip_address, rule_type }) });
-      if (json.success) {
-        showToast('Rule ditambahkan');
-        loadIpRules();
-      }
-    }
-    
-    async function deleteIpRule(id) {
-      const json = await apiCall(`/admin/ip-rules/${id}`, { method: 'DELETE' });
-      if (json.success) {
-        showToast('Rule dihapus');
-        loadIpRules();
-      }
-    }
-    
+    /* ===== LOGS ===== */
     async function loadLogs() {
-      const json = await apiCall('/admin/logs?limit=50');
-      const tbody = document.getElementById('logsTable');
-      tbody.innerHTML = '';
-      (json.data?.logs || []).forEach(l => {
-        tbody.innerHTML += `<tr><td>${l.action}</td><td>${l.user_id||'-'}</td><td>${l.ip_address||'-'}</td><td>${new Date(l.created_at).toLocaleString('id-ID')}</td></tr>`;
-      });
+      const container = document.getElementById("logsList");
+      container.innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
+      try {
+        const userId = document.getElementById("logUserFilter").value.trim();
+        const query = { limit: 50 };
+        if (userId) query.user_id = userId;
+        
+        const data = await apiCall("/admin/logs", { method: "GET", adminAuth: true, query });
+        const logs = data.logs || [];
+        if (!logs.length) {
+          container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-file-lines"></i><p>Belum ada log aktivitas.</p></div>`;
+          return;
+        }
+        container.innerHTML = logs.map(l => `
+      <div class="log-item">
+        <div class="log-icon"><i class="fa-solid fa-circle-info"></i></div>
+        <div class="log-body">
+          <div class="log-action">${l.action || 'Aktivitas'}</div>
+          <div class="log-meta">
+            ${l.user_id ? 'User: ' + l.user_id.slice(0,8) + '...' : 'System'}
+            ${l.ip_address ? ' · IP: ' + l.ip_address : ''}
+            · ${formatLogDate(l.created_at)}
+          </div>
+          ${l.detail ? `<div class="log-meta" style="margin-top:2px;">${l.detail}</div>` : ''}
+        </div>
+      </div>
+    `).join("");
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>Gagal memuat log.</p></div>`;
+        toastError("Gagal Memuat", err.message);
+      }
     }
+    
+    function formatLogDate(iso) {
+      if (!iso) return "-";
+      const d = new Date(iso);
+      return d.toLocaleString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    }
+    
+    /* ===== INIT ===== */
+    (function init() {
+      updateNavVisibility();
+      if (state.adminToken) showView("overview");
+      else showView("login");
+    })();
   </script>
+  
 </body>
 
 </html>
