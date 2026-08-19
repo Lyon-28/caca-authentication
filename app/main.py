@@ -128,11 +128,9 @@ app.include_router(newsletter_router)
 
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "..", "static")), name="static")
 
-"""
 @app.get("/")
 async def root():
-    return FileResponse("static/index.html")
-"""
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "system-auth.html"))
 
 @app.get("/redoc", include_in_schema=False)
 async def custom_redoc():
