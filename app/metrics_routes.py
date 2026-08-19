@@ -4,12 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, distinct
 from app.database import get_db
 from app.models import User, RefreshToken, ActivityLog, Tenant
-from app.deps import get_tenant_from_key
+from app.deps import get_tenant_from_token
 
 router = APIRouter(prefix="/metrics", tags=["Metrics"])
 
 @router.get("/overview")
-async def metrics_overview(tenant: Tenant = Depends(get_tenant_from_key), db: AsyncSession = Depends(get_db)):
+async def metrics_overview(tenant: Tenant = Depends(get_tenant_from_token), db: AsyncSession = Depends(get_db)):
     now = datetime.now(timezone.utc)
     day_ago = now - timedelta(days=1)
     month_ago = now - timedelta(days=30)
@@ -51,7 +51,7 @@ async def metrics_overview(tenant: Tenant = Depends(get_tenant_from_key), db: As
     }
 
 @router.get("/auth-methods")
-async def metrics_auth_methods(tenant: Tenant = Depends(get_tenant_from_key), db: AsyncSession = Depends(get_db)):
+async def metrics_auth_methods(tenant: Tenant = Depends(get_tenant_from_token), db: AsyncSession = Depends(get_db)):
     result = await db.execute(
         select(ActivityLog.action, func.count(ActivityLog.id))
         .where(ActivityLog.tenant_id == tenant.id, ActivityLog.action.like("login_via_%"))
