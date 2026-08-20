@@ -135,7 +135,18 @@ async def root():
 @app.get("/redoc", include_in_schema=False)
 async def custom_redoc():
     return FileResponse(os.path.join(BASE_DIR, "..", "static", "redoc.html"))
+    
+@app.get("/docs-html")
+async def root():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "docs" "index.html"))
 
+@app.get("/dashboard-tenant")
+async def root():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "tenant" "index.html"))
+    
+@app.get("/dashboard-admin")
+async def root():
+    return FileResponse(os.path.join(BASE_DIR, "..", "static", "admin" "index.html"))
 
 @app.get("/")
 async def root():
