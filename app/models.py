@@ -52,7 +52,7 @@ class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     tenant_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("tenants.id"), index=True)
     token_hash: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     is_revoked: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -81,7 +81,7 @@ class OAuthAccount(Base):
     __tablename__ = "oauth_accounts"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     provider: Mapped[str] = mapped_column(String(30), index=True)
     provider_user_id: Mapped[str] = mapped_column(String(255), index=True)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -99,14 +99,14 @@ class UserRole(Base):
     __tablename__ = "user_roles"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("roles.id"), index=True)
 
 class UserPreference(Base):
     __tablename__ = "user_preferences"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), unique=True, index=True)
     language: Mapped[str] = mapped_column(String(10), default="id")
     timezone: Mapped[str] = mapped_column(String(50), default="Asia/Jakarta")
     notifications_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -117,7 +117,7 @@ class ActivityLog(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=True, index=True)
-    user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     action: Mapped[str] = mapped_column(String(100), index=True)
     ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
     detail: Mapped[str | None] = mapped_column(String(1000), nullable=True)
@@ -135,7 +135,7 @@ class TermsAcceptance(Base):
     __tablename__ = "terms_acceptances"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     terms_version_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("terms_versions.id"))
     accepted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     
@@ -151,7 +151,7 @@ class EmailChangeRequest(Base):
     __tablename__ = "email_change_requests"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True)
     old_email: Mapped[str] = mapped_column(String(255))
     new_email: Mapped[str] = mapped_column(String(255))
     old_email_token: Mapped[str] = mapped_column(String(255), unique=True, index=True)
