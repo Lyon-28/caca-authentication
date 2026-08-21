@@ -23,13 +23,13 @@ async def test_sql_injection_login_safe(client):
 @pytest.mark.asyncio
 async def test_sql_injection_does_not_bypass_auth(client):
     tenant_resp = await client.post("/tenant/register", json={"name": "T", "email": "sqltest@test.com", "password": "Str0ngP@ss1"})
-    publik_key = tenant_resp.json()["data"]["publik_key"]
-    await client.post("/auth/register", json={"email": "victim@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    public_key = tenant_resp.json()["data"]["public_key"]
+    await client.post("/auth/register", json={"email": "victim@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
 
     resp = await client.post(
         "/auth/login",
         json={"email": "victim'--@test.com", "password": "anything"},
-        headers={"X-API-Key": publik_key},
+        headers={"X-API-Key": public_key},
     )
     assert resp.status_code in (401, 422)
 
@@ -46,8 +46,8 @@ async def test_expired_or_garbage_token_rejected(client):
 @pytest.mark.asyncio
 async def test_user_token_cannot_access_admin_endpoints(client):
     tenant_resp = await client.post("/tenant/register", json={"name": "T", "email": "admintest@test.com", "password": "Str0ngP@ss1"})
-    publik_key = tenant_resp.json()["data"]["publik_key"]
-    user_resp = await client.post("/auth/register", json={"email": "normaluser@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    public_key = tenant_resp.json()["data"]["public_key"]
+    user_resp = await client.post("/auth/register", json={"email": "normaluser@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
     user_access_token = user_resp.json()["data"]["tokens"]["access_token"]
 
     resp = await client.get("/admin/users", headers={"Authorization": f"Bearer {user_access_token}"})
@@ -67,8 +67,8 @@ async def test_tenant_token_cannot_access_user_endpoints(client):
 async def test_cross_tenant_data_isolation(client):
     tenant_a = await client.post("/tenant/register", json={"name": "A", "email": "tenanta@test.com", "password": "Str0ngP@ss1"})
     tenant_b = await client.post("/tenant/register", json={"name": "B", "email": "tenantb@test.com", "password": "Str0ngP@ss1"})
-    key_a = tenant_a.json()["data"]["publik_key"]
-    key_b = tenant_b.json()["data"]["publik_key"]
+    key_a = tenant_a.json()["data"]["public_key"]
+    key_b = tenant_b.json()["data"]["public_key"]
 
     await client.post("/auth/register", json={"email": "shared@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": key_a})
 
@@ -78,24 +78,24 @@ async def test_cross_tenant_data_isolation(client):
 @pytest.mark.asyncio
 async def test_account_lockout_after_failed_attempts(client):
     tenant_resp = await client.post("/tenant/register", json={"name": "T", "email": "lockouttest@test.com", "password": "Str0ngP@ss1"})
-    publik_key = tenant_resp.json()["data"]["publik_key"]
-    await client.post("/auth/register", json={"email": "lockedout@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    public_key = tenant_resp.json()["data"]["public_key"]
+    await client.post("/auth/register", json={"email": "lockedout@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
 
     for _ in range(5):
-        await client.post("/auth/login", json={"email": "lockedout@test.com", "password": "wrongpass"}, headers={"X-API-Key": publik_key})
+        await client.post("/auth/login", json={"email": "lockedout@test.com", "password": "wrongpass"}, headers={"X-API-Key": public_key})
 
-    resp = await client.post("/auth/login", json={"email": "lockedout@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    resp = await client.post("/auth/login", json={"email": "lockedout@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
     assert resp.status_code == 403
     assert resp.json()["error"]["code"] == "ACCOUNT_LOCKED"
 
 @pytest.mark.asyncio
 async def test_rate_limit_enforced_on_register(client):
     tenant_resp = await client.post("/tenant/register", json={"name": "T", "email": "ratelimit@test.com", "password": "Str0ngP@ss1"})
-    publik_key = tenant_resp.json()["data"]["publik_key"]
+    public_key = tenant_resp.json()["data"]["public_key"]
 
     statuses = []
     for i in range(15):
-        resp = await client.post("/auth/register", json={"email": f"rl{i}@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+        resp = await client.post("/auth/register", json={"email": f"rl{i}@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
         statuses.append(resp.status_code)
 
     assert 429 in statuses
@@ -103,8 +103,8 @@ async def test_rate_limit_enforced_on_register(client):
 @pytest.mark.asyncio
 async def test_password_hash_never_exposed(client):
     tenant_resp = await client.post("/tenant/register", json={"name": "T", "email": "hashtest@test.com", "password": "Str0ngP@ss1"})
-    publik_key = tenant_resp.json()["data"]["publik_key"]
-    resp = await client.post("/auth/register", json={"email": "hashcheck@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    public_key = tenant_resp.json()["data"]["public_key"]
+    resp = await client.post("/auth/register", json={"email": "hashcheck@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
     body = resp.json()
     assert "password" not in str(body).lower() or "password_hash" not in str(body)
 
