@@ -255,10 +255,15 @@ async def reactivate_account(user_id: str, tenant_id: str, db: AsyncSession = De
 
 @router.delete("/delete")
 async def delete_account(hard: bool = False, user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    if hard:
-        await db.delete(user)
-    else:
-        user.deleted_at = datetime.now(timezone.utc)
-        user.is_active = False
-    await db.commit()
+    try:
+        if hard:
+            await db.delete(user)
+        else:
+            user.deleted_at = datetime.now(timezone.utc)
+            user.is_active = False
+        await db.commit()
+    except Exception:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail={"code": "DELETE_FAILED", "message": "Gagal menghapus akun, coba lagi"})
+
     return {"success": True, "data": {"deleted": True, "hard": hard}, "meta": None}
