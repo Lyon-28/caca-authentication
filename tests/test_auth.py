@@ -6,16 +6,16 @@ async def test_tenant_register_and_user_flow(client):
     assert resp.status_code == 200
     body = resp.json()
     assert body["success"] is True
-    publik_key = body["data"]["publik_key"]
+    public_key = body["data"]["public_key"]
 
-    resp = await client.post("/auth/register", json={"email": "user@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    resp = await client.post("/auth/register", json={"email": "user@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
     assert resp.status_code == 200
     assert resp.json()["data"]["tokens"]["access_token"]
 
-    resp = await client.post("/auth/login", json={"email": "user@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": publik_key})
+    resp = await client.post("/auth/login", json={"email": "user@test.com", "password": "Str0ngP@ss1"}, headers={"X-API-Key": public_key})
     assert resp.status_code == 200
 
-    resp = await client.post("/auth/login", json={"email": "user@test.com", "password": "wrongpass"}, headers={"X-API-Key": publik_key})
+    resp = await client.post("/auth/login", json={"email": "user@test.com", "password": "wrongpass"}, headers={"X-API-Key": public_key})
     assert resp.status_code == 401
     assert resp.json()["success"] is False
 
